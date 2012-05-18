@@ -1,0 +1,262 @@
+{% extends "layout.html" %}
+{% block head %}
+
+<link rel='stylesheet' type='text/css' href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css' />
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js'></script>
+<link href="{{ url_for('static', filename='jquery-weekcalendar/jquery.weekcalendar.css') }}" rel="stylesheet">
+<script type='text/javascript' src="{{ url_for('static', filename='jquery-weekcalendar/jquery.weekcalendar.js') }}"></script>
+
+<script src="{{ url_for('static', filename='trip.js') }}"></script>
+<script src="{{ url_for('static', filename='TripModel.js') }}"></script>
+<script src="{{ url_for('static', filename='TripView.js') }}"></script>
+<script src="{{ url_for('static', filename='TripController.js') }}"></script>
+<script src="{{ url_for('static', filename='Collaborators.js') }}"></script>
+<script src="{{ url_for('static', filename='EventTypes.js') }}"></script>
+<script src="{{ url_for('static', filename='event.js') }}"></script>
+<script src="{{ url_for('static', filename='map.js') }}"></script>
+<script src="{{ url_for('static', filename='permission.js') }}"></script>
+<script src="{{ url_for('static', filename='pageView.js') }}"></script>
+<script src="{{ url_for('static', filename='resize.js') }}"></script>
+<script src="{{ url_for('static', filename='myTrips.js') }}"></script>
+<script src="{{ url_for('static', filename='util.js') }}"></script>
+<script src="{{ url_for('static', filename='log.js') }}"></script>
+
+
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap-modal.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap-tooltip.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap-popover.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap-button.js') }}"></script>
+
+<link href="{{ url_for('static', filename='bootstrap-datepicker/css/datepicker.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+<link href="{{ url_for('static', filename='jQueryTimepicker/timePicker.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='jQueryTimepicker/jquery.timePicker.min.js') }}"></script>
+
+
+<script>
+var URL_FOR = {
+	'getUserID': "{{ url_for('getUserID') }}",
+	'trips' : "{{ url_for('showTrip') }}",
+	'getTrips' : "{{ url_for('getTrips') }}"
+};
+</script>
+
+<link href="{{ url_for('static', filename='trip.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='map.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='events.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='log.css') }}" rel="stylesheet">
+
+<script type="text/javascript"
+  src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDapSy04O3iMqxkwYsHqp-nUZaHY_0LLx0&sensor=false&libraries=places">
+</script>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true&libraries=places"></script>
+<link href="{{ url_for('static', filename='events.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block nav %}
+<li>
+	<button class="btn btn-inverse" id="home-btn">
+		<i class='icon-home icon-white'></i>
+		Home
+	</button>
+</li>
+<li>
+	<button class="btn btn-inverse" id="refresh-btn">
+		<i class='icon-refresh icon-white'></i>
+		Refresh
+	</button>
+</li>
+{% endblock %}
+
+{% block nav_right %}
+	<li>
+		<button class="btn btn-inverse" id="collaborators-btn">
+			<i class='icon-user icon-white'></i>
+			Collaborators
+		</button>
+	</li>
+	<li class="dropdown" id="myTrips">
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
+		  My trips
+		  <b class="caret"></b>
+		</a>
+		<ul class="dropdown-menu" id="myTrips-list">
+		</ul>
+	</li>
+{% endblock %}
+
+{% block before %}
+
+	<div class="gray height-fixed" id="page-control">
+		<div class="subContainer width-fixed">
+			<div class="btn-group" data-toggle="buttons-radio">
+				<button id="map-view-btn" class="btn btn-info active"><a class="icon-white icon-map-marker"></a>&nbsp;Map View</button>
+				<button id="cal-view-btn" class="btn btn-info"><a class="icon-white icon-calendar"></a>&nbsp;Calendar View</button>
+			</div>
+		</div>
+		<div class="subContainer width-floating">
+			<div id="logContainer" class="pull-right"></div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block body %}
+	{# Events #}
+	<div class="height-floating width-floating subContainer" id="event-calendar">
+		<div id="calendar"></div>
+	</div>
+	<div class="width-fixed subContainer" id="eventsContainer">
+		<h3 class="height-fixed">Scheduled Itinerary</h3>
+		<div class="height-fixed">&nbsp;</div>
+			<div class="gray height-floating" id="event-list">
+				<div id="events" class="height-floating">
+					<ul id="events-list" class="nav nav-pills nav-stacked">
+					</ul>
+				</div>
+				<div id="events-optimized" class="height-floating">
+					<ul id="events-list-optimized" class="nav nav-pills nav-stacked">
+					</ul>
+				</div>
+				<div class="height-fixed" id="optimize-control">
+					<button class="btn btn-primary" id="optimize-optimize-btn">Optimize the order</button>
+					<span class="optimize-after">Do you want to save this change?</span>
+					<button class="btn btn-success optimize-after" id="optimize-save-btn">Yes</button>
+					<button class="btn optimize-after" id="optimize-cancel-btn">No</button>
+				</div>
+			</div>
+	</div>
+
+	
+	<div class="width-floating height-floating subContainer" id="centerContainer">
+		<div class ="height-fixed"> 
+			<button class="btn" data-toggle="button"  id = "showRouteButton">Show Route</button>
+		</div>
+		<div class="height-floating mapContainer" id="mapContainer"></div>
+		<div class="eventWindow" id="eventWindow"></div>
+	</div>
+	<div class="width-fixed pull-right height-floating subContainer" id="rightContainer">
+		<div class="input-append height-fixed">
+			<input id="searchTextField" class="span2" placeholder="Search for a location...">
+			<button class="btn btn-primary" id="map-search-btn"><a class="icon-search icon-white"></a></button>
+		</div>
+		<div id="results" class="height-floating gray"></div>
+	</div>
+
+	<div class="modal" id="editEvent-modal">
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal">×</a>
+			<h3 id="editEvent-title">Add an event</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<input class="input-small" type=hidden id="editEvent-id">
+				<div class="control-group">
+					<label class="control-label">name</label>
+					<div class="controls">
+						<input class="input-large" type=text id="editEvent-name">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">type</label>
+					<div class="controls">
+						<select id="editEvent-type">
+						</select>
+						<br id="addEventType-spacer">&nbsp;</br>
+						<input id="addEventType-name" placeholder="Input type here...">
+					</div>
+				</div>
+				
+				<div class="control-group" id="editEvent-startTimeGroup">
+					<label class="control-label">start time</label>
+					<div class="controls">
+						<input class="input-small date" size="16" type="text" value="12/02/2012" id="editEvent-startDate" readonly>
+						<input class="input-mini time" type=text id="editEvent-startTime" readonly>
+					</div>
+				</div>
+				
+				<div class="control-group" id="editEvent-endTimeGroup">
+					<label class="control-label">end time</label>
+					<div class="controls">
+						<input class="input-small date" size="16" type="text" value="12/02/2012" id="editEvent-endDate" readonly>
+						<input class="input-mini time" type=text id="editEvent-endTime" readonly>
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">location name</label>
+					<div class="controls" id="usernameControl">
+						<span class="input-large uneditable-input" id="editEvent-locationName"></span>
+					</div>
+				</div>
+				
+				<input class="input-small" type=hidden id="editEvent-suggestedInterval">
+				<input class="input-small" type=hidden id="editEvent-locationLat">
+				<input class="input-small" type=hidden id="editEvent-locationLng">
+			</form>
+		</div>
+
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal">Close</a>
+				<button class="btn btn-primary" id="editEvent-confirm-btn">Add</button>
+			</div>
+	</div>
+
+	<div class="modal" id="collaborators-modal">
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal">×</a>
+			<h3>Collaborators</h3>
+		</div>
+		<div class="modal-body">
+			<div class="row">
+				<div class="span2"><h4>Username</h4></div>
+				<div class="span2"><h4>Permission</h4></div>
+			</div>
+			<hr>
+			<div id="collaborators">
+			</div>
+			<div class="hide-plevel-3" id="invite-container">
+				<div class="well" id="invite-input">
+					<div>Add an collaborator</div>
+					<input class="input span2" id="inviteName" placeholder="Type in an username...">
+					<select class="input-small" id="invite-permission"></select>
+					<p id="invite-control">
+						<a href="#" class="btn btn-success" id="invite-confirm-btn">Share</a>
+						<a href="#" class="btn" id="invite-cancel-btn">Cancel</a>
+					</p>
+				</div>
+				<div class="well" id="invite-alt">
+					You have made changes that you need to save.				
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a href="#" class="btn btn-primary" id="collaborators-done-btn" data-dismiss="modal">Done</a>
+			
+			<a href="#" class="btn btn-success" id="collaborators-confirm-btn">Save Changes</a>
+			<a href="#" class="btn" id="collaborators-cancel-btn">Cancel</a>
+
+		</div>
+
+		</div>
+			<div class="modal" id="createTripModal">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">×</button>
+				<h3>Create a trip</h3>
+			</div>
+			<form method="post" action="{{ url_for('newTrip') }}">
+				<div class="modal-body">
+					<input class="input" name="name" id="newtripname">
+				</div>
+				<div class="modal-footer">
+					<a href="#" class="btn" data-dismiss="modal">Close</a>
+					<button class="btn btn-success" type="submit">Create trip</button>
+				</div>
+			</form>
+		</div>	
+
+	
+	
+{% endblock %}

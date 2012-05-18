@@ -1,0 +1,44 @@
+{% extends "form.html" %}
+{% block head %}
+	<script src="{{ url_for('static', filename='register.js') }}"></script>
+{% endblock %}
+
+
+
+{% block left %}
+
+	<div class="hero-unit">
+		<h1>Super Tripper</h1>
+		<p>Plan a trip with your friends!</p>
+	</div>
+{% endblock %}
+
+{% block form %}
+<form class="form-horizontal" method=post>
+	<fieldset>
+	<legend> Sign up </legend>
+		<div class="control-group" id="usernameGroup">
+			<label class="control-label">Username</label>
+			<div class="controls" id="usernameControl">
+				<input class="input-small" type=text name=username id="username">
+			</div>
+		</div>
+		<div class="control-group" id="passwordGroup">
+			<label class="control-label">Password</label>
+			<div class="controls" id="passwordControl">
+				<input class="input-small" type=password name=password id="password">
+			</div>
+		</div>
+		<div class="control-group" id="confirmPasswordGroup">
+			<label class="control-label">Confirm password</label>
+			<div class="controls" id="confirmPasswordControl">
+				<input class="input-small" type=password name=confirmPassword id="confirmPassword">
+			</div>
+		</div>
+		
+		<div class="form-actions">
+			<input class="btn btn-large btn-primary" type=submit value="Sign up">
+		</div>
+	</fieldset>
+</form>
+{% endblock %}

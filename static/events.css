@@ -1,0 +1,53 @@
+#events {
+	overflow: auto;
+}
+#editEvent-modal input {
+	cursor: default;
+	background-color:white;
+}
+.clickable:hover {
+	cursor: pointer;
+}
+.marker-icon {
+	width:21px;
+	height:34px;
+}
+.event-marker{
+	width:15px;
+}
+.event-table {
+	height:20px;
+	width:100%;
+}
+.event-name {
+}
+.event-icons {
+	width: 30px;
+}
+#events-list {
+	overflow: auto;
+}
+.travelTime {
+	padding-left:11px;
+	padding-right:11px;
+
+}
+.travelTime-arrow {
+	width:15px;
+}
+.optimized {
+	padding-left:11px;
+	padding-right:11px;
+}
+.optimized-event-name {
+	color: #08C;
+}
+.optimized.changed {
+	font-style: italic;
+}
+#events-optimized {
+	overflow: auto;
+}
+#calendar {
+	height:100%;
+}

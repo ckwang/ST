@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block before %}
+	<div class="container">
+	  {% for message in get_flashed_messages() %}
+		<div class="alert alert-block fade in">
+			<a class="close" data-dismiss="alert" href="#">×</a>
+			{{ message }}
+		</div>
+	  {% endfor %}
+	</div>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+	<div class="row">
+		<div class="span12" id="mainContainer">
+			<div class="row">
+				<div class="span8" id="leftContainer">
+					{% block left %}
+					{% endblock %}
+				</div>
+				<div class="span4" id="formContainer">
+					{% block form %}
+					{% endblock %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

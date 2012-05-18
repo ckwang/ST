@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block head %}
+<script src="{{ url_for('static', filename='triplist.js') }}"></script>
+<script src="{{ url_for('static', filename='permission.js') }}"></script>
+<script src="{{ url_for('static', filename='resize.js') }}"></script>
+{% endblock %}
+
+{% block nav %}
+<li>
+	<button class="btn btn-inverse" id="refresh">
+		<i class='icon-refresh icon-white'></i>
+		Refresh
+	</button>
+</li>
+<li>
+	<button class="btn btn-inverse newtrip-btn">
+		<i class='icon-plus icon-white'></i>
+		Create a trip
+	</button>
+</li>
+
+{% endblock %}
+{% block body %}
+	<div class="row">
+		{% for message in get_flashed_messages() %}
+			<div class="alert alert-block fade in">
+				<a class="close" data-dismiss="alert" href="#">×</a>
+				{{ message }}
+			</div>
+		{% endfor %}
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="triplist-container span12">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th class="span1">&nbsp;</th>
+							<th class="span3">Name</th>
+							<th class="span2">Owner</th>
+							<th class="span3">Scheduled Trip Dates</th>
+							<th class="span1">Permission</th>
+						</tr>
+					</thead>
+					<tbody id="listContainer">
+					</tbody>
+				</table>
+			</div>
+		
+		</div>
+		<div class="row">
+			<div class="span12">
+				<button class="btn btn-primary newtrip-btn">
+					<i class="icon-white icon-plus newtrip-btn"></i>Add a trip
+				</button>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal" id="createTripModal">
+		<div class="modal-header">
+			<button class="close" data-dismiss="modal">×</button>
+			<h3>Create a trip</h3>
+		</div>
+		<form method="post" action="{{ url_for('newTrip') }}">
+			<div class="modal-body">
+				<input class="input" name="name" id="newtripname">
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn" data-dismiss="modal">Close</a>
+				<button class="btn btn-success" type="submit">Create trip</button>
+			</div>
+		</form>
+	</div>	
+{% endblock %}
