@@ -6,7 +6,7 @@ import os
                     
 app = Flask(__name__)
 
-SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 SECRET_KEY = "RandomSecretKey"
 DEBUG = False
 
