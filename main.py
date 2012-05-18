@@ -6,7 +6,7 @@ import os
                     
 app = Flask(__name__)
 
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(os.path.dirname(__file__), "db", "database.db")
+SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 SECRET_KEY = "RandomSecretKey"
 DEBUG = False
 
