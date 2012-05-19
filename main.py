@@ -1,19 +1,36 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, g
 from flaskext.login import (LoginManager, current_user, login_required,
                             login_user, logout_user, confirm_login, fresh_login_required, make_secure_token)
+                            
+from flaskext.oauth import OAuth
 from model import *
 import os
                     
 app = Flask(__name__)
 
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')#
+#SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(os.path.dirname(__file__), "db", "database.db")
 SECRET_KEY = "RandomSecretKey"
 DEBUG = False
+FACEBOOK_APP_ID = "460067924007727"
+FACEBOOK_APP_SECRET = "dfc9a61d4cfb96e81628b12d0f7f761a"
 
 app.config.from_object(__name__)
 db.init_app(app)
 app.test_request_context().push()
 db.create_all()
+
+# set up OAuth
+oauth = OAuth()
+facebook = oauth.remote_app("facebook",
+	base_url="https://graph.facebook.com/",
+	request_token_url=None,
+	access_token_url="/oauth/access_token",
+	authorize_url="https://www.facebook.com/dialog/oauth",
+	consumer_key=FACEBOOK_APP_ID,
+	consumer_secret=FACEBOOK_APP_SECRET,
+	request_token_params={"scope": "email"}
+)
 
 # set up the login manager
 login_manager = LoginManager()
@@ -29,6 +46,31 @@ def load_token(token):
 	return User.get_by_token(token)
 
 login_manager.setup_app(app)
+
+@app.route('/fb_login')
+def fb_login():
+    return facebook.authorize(callback=url_for('facebook_authorized',
+        next=request.args.get('next') or request.referrer or None,
+        _external=True))
+
+
+@app.route('/login/authorized')
+@facebook.authorized_handler
+def facebook_authorized(resp):
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        )
+    session['oauth_token'] = (resp['access_token'], '')
+    me = facebook.get('/me')
+    return 'Logged in as id=%s name=%s redirect=%s' % \
+        (me.data['id'], me.data['name'], request.args.get('next'))
+
+
+@facebook.tokengetter
+def get_facebook_oauth_token():
+    return session.get('oauth_token')
 
 # login
 @app.route("/login", methods=["GET", "POST"])
