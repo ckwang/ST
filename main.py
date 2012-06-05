@@ -211,8 +211,11 @@ def getPermissionJson(trip_id):
 	return jsonify({"permission": getPermission(trip_id)})
 
 def getPermission(trip_id):
-	co = Collaborator.get_collaborator(trip_id, current_user.id)
-	return co.permission if co else 0
+	if current_user.username == "admin":
+		return 1
+	else:
+		co = Collaborator.get_collaborator(trip_id, current_user.id)
+		return co.permission if co else 0
 
 @app.route("/trips/<int:trip_id>/collaborators/", methods=["GET"])
 @login_required

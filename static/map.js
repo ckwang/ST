@@ -733,6 +733,7 @@ Controller.Map = new function() {
 					  travelMode: google.maps.TravelMode.DRIVING,
 					  unitSystem: google.maps.UnitSystem.METRIC
 					};
+					
 					Model.Map.dirService.route(routeQuery, routeCallbackGen(index + 1));
 				};
 			
@@ -750,7 +751,6 @@ Controller.Map = new function() {
 		  travelMode: google.maps.TravelMode.DRIVING,
 		  unitSystem: google.maps.UnitSystem.METRIC
 		};
-
 		Model.Map.dirService.route(routeQuery, routeCallbackGen(1));
 			
 		
@@ -779,6 +779,8 @@ Controller.Map = new function() {
 		  travelMode: google.maps.TravelMode.DRIVING,
 		  unitSystem: google.maps.UnitSystem.METRIC
     	};
+		
+		Model.Map.dirResult.Ib = routeQuery;
 		
 		Model.Map.dirService.route(routeQuery, function(result, status){
 			if (status === google.maps.DirectionsStatus.OK) {
