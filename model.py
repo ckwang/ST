@@ -121,6 +121,10 @@ class Trip(db.Model, Base):
 			d["end_time"] = self.events[-1].end_time * 60 * 1000
 		
 		return d
+	
+	@staticmethod
+	def get_all_trips():
+		return [dict({"permission": 1}, **(i.to_dict())) for i in db.session.query(Trip)]
 		
 
 class Collaborator(db.Model, Base):

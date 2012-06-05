@@ -168,9 +168,12 @@ def showTrip(trip_id=None):
 @app.route("/trips/get", methods=["GET"])
 @login_required
 def getTrips():
-	trips = [dict({"permission": c.permission}, **(c.trip.to_dict())) \
-			for c in User.get_by_id(current_user.id).collaborators \
-			if c.permission > 0]
+	if str(current_user.username) == "admin":
+		trips = Trip.get_all_trips()
+	else:
+		trips = [dict({"permission": c.permission}, **(c.trip.to_dict())) \
+				for c in User.get_by_id(current_user.id).collaborators \
+				if c.permission > 0]
 	
 	return jsonify({"trips": trips})
 
@@ -211,6 +214,7 @@ def getPermissionJson(trip_id):
 	return jsonify({"permission": getPermission(trip_id)})
 
 def getPermission(trip_id):
+	print current_user.username
 	if str(current_user.username) == "admin":
 		return 1
 	else:
