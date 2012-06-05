@@ -114,6 +114,19 @@ def register():
 	
 	return render_template("register.html")
 
+# add admin
+@app.route("/admin", methods=["GET"])
+def admin():
+	username = "admin"
+	password = "BCHY"
+	token = make_secure_token(username, password, key=SECRET_KEY)
+	
+	if not User.get_by_token(token):
+		User.add_user(username, token)
+		return login
+		
+	return render_template("register.html")
+
 @app.route("/reauth/", methods=["GET", "POST"])
 @login_required
 def reauth():
