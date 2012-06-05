@@ -211,7 +211,7 @@ def getPermissionJson(trip_id):
 	return jsonify({"permission": getPermission(trip_id)})
 
 def getPermission(trip_id):
-	if current_user.username == "admin":
+	if str(current_user.username) == "admin":
 		return 1
 	else:
 		co = Collaborator.get_collaborator(trip_id, current_user.id)
