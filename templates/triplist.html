@@ -45,11 +45,11 @@
 					<tbody id="listContainer">
                                           <tr ng-repeat="trip in trips">
                                             <td>
-                                              <a class="close removeTrip" id=[[trip.id]]>×</a>
+                                              <a class="close removeTrip" ng-click="deleteTrip(trip.id)">×</a>
                                             </td>
-                                            <td><a href=trip.id>[[trip.name]]</a></td>
+                                            <td><a href=[[trip.id]]>[[trip.name]]</a></td>
                                             <td>[[trip.owner_name]]</td>
-                                            <td></td>
+                                            <td>[[trip.start_time]]-[[trip.end_time]]</td>
                                             <td>[[trip.permission]]</td>
                                           </tr>
 					</tbody>
