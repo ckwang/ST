@@ -4,6 +4,12 @@
 
 var REFRESH_TIME = 5000;	// Time interval between auto-refreshing in milliseconds
 
+superTripperApp.controller('TriplistCtrl', function($scope, $http) {
+  $http.get('get').success(function(data) {
+    $scope.trips = data.trips;
+  });
+});
+
 $(document).ready(function() {
 	$('#createTripModal').modal();
 	$('#createTripModal').modal('hide');	// Hide the modal initially
@@ -17,7 +23,7 @@ $(document).ready(function() {
 	$('#refresh').click(function() {
 		update();
 	});
-	update();
+	//update();
 	
 	// Auto-refresh
 	var timeout = function() {
@@ -26,7 +32,7 @@ $(document).ready(function() {
 			timeout();
 		}, REFRESH_TIME);
 	};
-	timeout();
+//	timeout();
 	
 });
 // Function for updating
