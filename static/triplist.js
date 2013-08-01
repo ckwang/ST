@@ -5,12 +5,15 @@
 var REFRESH_TIME = 5000;	// Time interval between auto-refreshing in milliseconds
 
 superTripperApp.controller('TriplistCtrl', function($scope, $http) {
+  $scope.trips = [];
   var _updateTrips = function(data) {
     $scope.trips = data.trips;
+    $scope.$apply();
   };
   $http.get('get').success(_updateTrips);
   $scope.deleteTrip = function(trip_id) {
-    $http.post('delete', {'trip_id': trip_id}).success(_updateTrips);
+    //$http.post('delete', {'trip_id': trip_id}).success(_updateTrips);
+    $.post('delete/', {'trip_id': trip_id}, _updateTrips);
   };
 
 
