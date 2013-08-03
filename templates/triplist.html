@@ -29,7 +29,7 @@
       </div>
     {% endfor %}
   </div>
-  <div class="container" ng-controller="TriplistCtrl">
+  <div class="container" ng-controller="TriplistCtrl" ng-init="Init()">
     <div class="row">
       <div class="triplist-container span12">
         <table class="table table-striped">
@@ -43,15 +43,15 @@
             </tr>
           </thead>
           <tbody id="listContainer">
-                                          <tr ng-repeat="trip in trips">
-                                            <td>
-                                              <a class="close removeTrip" ng-click="deleteTrip(trip.id)">×</a>
-                                            </td>
-                                            <td><a href=[[trip.id]]>[[trip.name]]</a></td>
-                                            <td>[[trip.owner_name]]</td>
-                                            <td>[[trip.start_time|date:'yyyy/MM/dd']] - [[trip.end_time|date:'yyyy/MM/dd']]</td>
-                                            <td>[[trip.permission|permission]]</td>
-                                          </tr>
+            <tr ng-repeat="trip in trips">
+              <td>
+                <a class="close removeTrip" ng-click="deleteTrip(trip.id)">×</a>
+              </td>
+              <td><a href=[[trip.id]]>[[trip.name]]</a></td>
+              <td>[[trip.owner_name]]</td>
+              <td>[[trip.start_time|date:'yyyy/MM/dd']] - [[trip.end_time|date:'yyyy/MM/dd']]</td>
+              <td>[[trip.permission|permission]]</td>
+            </tr>
           </tbody>
         </table>
       </div>

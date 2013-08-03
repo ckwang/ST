@@ -2,21 +2,29 @@
 //	Updates the trip list by using AJAX calls
 //
 
-var REFRESH_TIME = 5000;	// Time interval between auto-refreshing in milliseconds
 
-superTripperApp.controller('TriplistCtrl', function($scope, $http) {
+superTripperApp.controller('TriplistCtrl', function($scope, $http, $timeout) {
+  //TODO(yuchikuo): create a service called "constants"
+  $scope.REFRESH_TIME = 5000;	// Time interval between auto-refreshing in milliseconds
   $scope.trips = [];
   var _updateTrips = function(data) {
     $scope.trips = data.trips;
     $scope.$apply();
   };
-  $http.get('get').success(_updateTrips);
+  $scope.UpdateTrips = function() {
+    $http.get('get').success(_updateTrips);
+  };
+  $scope.Init = function() {
+    $scope.UpdateTrips();
+    $timeout(function() {
+      $scope.UpdateTrips();
+    }, $scope.REFRESH_TIME);
+  };
   $scope.deleteTrip = function(trip_id) {
+    //TODO(yuchikuo): $https doesn't quite work
     //$http.post('delete', {'trip_id': trip_id}).success(_updateTrips);
     $.post('delete/', {'trip_id': trip_id}, _updateTrips);
   };
-
-
 });
 
 $(document).ready(function() {
@@ -44,63 +52,3 @@ $(document).ready(function() {
 //	timeout();
 	
 });
-// Function for updating
-var update = function(response) {
-	// If there's data to update, update the page with that data
-	if (response) {
-		// Remove all existing trips
-		$('.trip').remove();
-		var trips = response.trips;
-		var container = $('#listContainer');
-		
-		// Render all trips
-		trips.forEach(function(trip) {
-			var row = $('<tr class="trip">');
-			container.append(row);
-		
-			// Remove button
-			row.append(
-				$('<td>').append(
-					$('<a class="close removeTrip">').attr('id', trip.id).html('&times;').click(function() {
-						var id = trip.id;
-						$.post('delete/', {'trip_id': id}, function(response) {
-							update(response);
-						});
-					})
-			));
-			// Link to trip page
-			row.append(
-				$('<td>').append(
-					$('<a>').text(trip.name).attr('href', '' + trip.id)));
-			
-			// owner
-			row.append($('<td>').html(trip.owner_name));
-					
-			// trip time
-			var formatDigit = function(num) {
-				return num < 10 ? ('0' + num) : num;
-			};
-			
-			var toDateString = function(dateObj) {
-				var month = formatDigit(dateObj.getMonth()+1);
-				var date = formatDigit(dateObj.getDate());
-				return month + "/" + date + "/" + dateObj.getFullYear();
-			};
-			
-			var dateContent = $('<td>')
-			if (trip.start_time) {
-				dateContent.html(toDateString(new Date(trip.start_time)) +
-					" - " + toDateString(new Date(trip.end_time)));
-			}
-			row.append(dateContent);
-			
-			// permission
-			row.append($('<td>').text(Permission.permissionToString(trip.permission)));
-		});
-	// Otherwise, get data by AJAX call
-	} else {
-		$.get('get', function(response) {
-			update(response);
-		});
-	}
-}
