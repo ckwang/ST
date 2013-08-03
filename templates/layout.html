@@ -16,8 +16,8 @@ block body: inside body container #}
     <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='base.js') }}"></script>
 
-	{% block head %}
-	{% endblock %}
+  {% block head %}
+  {% endblock %}
   </head>
 
   <body ng-app="superTripperApp">
@@ -25,30 +25,30 @@ block body: inside body container #}
     <div class="navbar navbar-fixed-top height-fixed">
       <div class="navbar-inner">
         <div class="st-container">
-			 <a class="brand" href="{{ url_for('showTrip') }}">Super Tripper</a> 
-			<ul class="nav">
-				{% block nav %}
-				{% endblock %}
-			</ul>
-			<ul class="nav pull-right">
-				{% block nav_right %}
-				{% endblock %}
-				{% if current_user.is_authenticated() %}
-					<li class="active"><a>Hi, <strong>{{ current_user.username }}</strong></a></li>
-					<li><a href="{{ url_for('logout') }}">Logout</a></li>
-				{% else %}
-					<li><a href="{{ url_for('login') }}">Login</a></li>
-					<li><a href="{{ url_for('register') }}">Register</a></li>
-				{% endif %}
-			</ul>
+       <a class="brand" href="{{ url_for('showTrip') }}">Super Tripper</a> 
+      <ul class="nav">
+        {% block nav %}
+        {% endblock %}
+      </ul>
+      <ul class="nav pull-right">
+        {% block nav_right %}
+        {% endblock %}
+        {% if current_user.is_authenticated() %}
+          <li class="active"><a>Hi, <strong>{{ current_user.username }}</strong></a></li>
+          <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+          <li><a href="{{ url_for('login') }}">Login</a></li>
+          <li><a href="{{ url_for('register') }}">Register</a></li>
+        {% endif %}
+      </ul>
         </div>
       </div>
     </div>
 {% block before %}
 {% endblock %}
     <div class="st-container height-floating" id="bodyContainer">
-	{% block body %}
-	{% endblock %}
+  {% block body %}
+  {% endblock %}
 
     </div> <!-- /container -->
   </body>
