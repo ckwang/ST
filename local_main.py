@@ -108,7 +108,7 @@ def showTrip(trip_id=None):
 	
 # 	collaborators = [c for c in User.get_by_id(current_user.id).collaborators if c.permission > 0]
 	
-	return render_template("triplist.html")
+	return render_template("triplist.html", ngctrl="TriplistCtrl")
 
 @app.route("/trips/get", methods=["GET"])
 @login_required

@@ -37,6 +37,7 @@ $(document).ready(function() {
 		});	
 	});
 	// Update if user clicks refresh putton
+        /*
 	$('#refresh').click(function() {
 		update();
 	});
@@ -51,4 +52,5 @@ $(document).ready(function() {
 	};
 //	timeout();
 	
+        */
 });

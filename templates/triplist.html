@@ -7,7 +7,7 @@
 
 {% block nav %}
 <li>
-  <button class="btn btn-inverse" id="refresh">
+  <button class="btn btn-inverse" id="refresh" ng-click="UpdateTrips()">
     <i class='icon-refresh icon-white'></i>
     Refresh
   </button>
@@ -29,7 +29,7 @@
       </div>
     {% endfor %}
   </div>
-  <div class="container" ng-controller="TriplistCtrl" ng-init="Init()">
+  <div class="container">
     <div class="row">
       <div class="triplist-container span12">
         <table class="table table-striped">

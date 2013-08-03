@@ -20,7 +20,11 @@ block body: inside body container #}
   {% endblock %}
   </head>
 
-  <body ng-app="superTripperApp">
+  <body ng-app="superTripperApp" 
+    {% if ngctrl %} 
+    ng-controller="{{ ngctrl }}" ng-init="Init()"
+    {% endif %}
+  >
 
     <div class="navbar navbar-fixed-top height-fixed">
       <div class="navbar-inner">
