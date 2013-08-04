@@ -13,7 +13,7 @@
   </button>
 </li>
 <li>
-  <button class="btn btn-inverse newtrip-btn">
+  <button class="btn btn-inverse newtrip-btn" ng-click="openCreateTrip()">
     <i class='icon-plus icon-white'></i>
     Create a trip
   </button>
@@ -59,7 +59,7 @@
     </div>
     <div class="row">
       <div class="span12">
-        <button class="btn btn-primary newtrip-btn">
+        <button class="btn btn-primary newtrip-btn" ng-click="openCreateTrip()">
           <i class="icon-white icon-plus newtrip-btn"></i>Add a trip
         </button>
       </div>
@@ -67,19 +67,21 @@
   </div>
 
 
-  <div class="modal" id="createTripModal">
+{% endblock %} <!-- block body -->
+{% block after %}
+  <div modal="createTripOpen" id="createTripModal" options="opts">
     <div class="modal-header">
-      <button class="close" data-dismiss="modal">×</button>
-      <h3>Create a trip</h3>
+      <button class="close" ng-click="closeCreateTrip()">×</button>
+      <h3>Create a trip [[createTripOpen]]</h3>
     </div>
-    <form method="post" action="{{ url_for('newTrip') }}">
+    <form method="post" action="{{ url_for('newTrip') }}"> 
       <div class="modal-body">
         <input class="input" name="name" id="newtripname">
       </div>
       <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Close</a>
+        <a href="#" class="btn" ng-click="closeCreateTrip()">Close</a>
         <button class="btn btn-success" type="submit">Create trip</button>
       </div>
-    </form>
+    </form> 
   </div>  
 {% endblock %}

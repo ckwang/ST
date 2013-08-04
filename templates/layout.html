@@ -9,11 +9,14 @@ block body: inside body container #}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="yuchikuo">
-    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='super-tripper.css') }}" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+{#    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"> #}
+    <link href="{{ url_for('static', filename='super-tripper.css') }}" rel="stylesheet"> 
+    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.4.0.js"></script>
+
+{#    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script> #}
     <script src="{{ url_for('static', filename='base.js') }}"></script>
 
   {% block head %}
@@ -55,5 +58,7 @@ block body: inside body container #}
   {% endblock %}
 
     </div> <!-- /container -->
+  {% block after %}
+  {% endblock %}
   </body>
 </html>

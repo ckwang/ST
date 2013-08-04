@@ -11,6 +11,11 @@ superTripperApp.controller('TriplistCtrl', function($scope, $http, $timeout) {
     $scope.trips = data.trips;
     $scope.$apply();
   };
+  $scope.opts = {
+    backdropFade: true,
+    dialogFade:true,
+    controller: 'TriplistCtrl'
+  };
   $scope.UpdateTrips = function() {
     $http.get('get').success(_updateTrips);
   };
@@ -25,7 +30,14 @@ superTripperApp.controller('TriplistCtrl', function($scope, $http, $timeout) {
     //$http.post('delete', {'trip_id': trip_id}).success(_updateTrips);
     $.post('delete/', {'trip_id': trip_id}, _updateTrips);
   };
+  $scope.openCreateTrip = function() {
+    $scope.createTripOpen = true;
+  };
+  $scope.closeCreateTrip = function() {
+    $scope.createTripOpen = false;
+  }
 });
+/*
 
 $(document).ready(function() {
 	$('#createTripModal').modal();
@@ -52,5 +64,5 @@ $(document).ready(function() {
 	};
 //	timeout();
 	
-        */
 });
+        */
