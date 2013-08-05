@@ -1,8 +1,6 @@
 //
 //	Updates the trip list by using AJAX calls
 //
-
-
 superTripperApp.controller('TriplistCtrl', function($scope, $http, $timeout) {
   //TODO(yuchikuo): create a service called "constants"
   $scope.REFRESH_TIME = 5000;	// Time interval between auto-refreshing in milliseconds
@@ -14,7 +12,6 @@ superTripperApp.controller('TriplistCtrl', function($scope, $http, $timeout) {
   $scope.opts = {
     backdropFade: true,
     dialogFade:true,
-    controller: 'TriplistCtrl'
   };
   $scope.UpdateTrips = function() {
     $http.get('get').success(_updateTrips);
@@ -37,32 +34,3 @@ superTripperApp.controller('TriplistCtrl', function($scope, $http, $timeout) {
     $scope.createTripOpen = false;
   }
 });
-/*
-
-$(document).ready(function() {
-	$('#createTripModal').modal();
-	$('#createTripModal').modal('hide');	// Hide the modal initially
-	// Show the createTripModal when any of the newtrip button is clicked
-	$('.newtrip-btn').each(function() {
-		$(this).click(function() {
-			$('#createTripModal').modal('show');
-		});	
-	});
-	// Update if user clicks refresh putton
-        /*
-	$('#refresh').click(function() {
-		update();
-	});
-	//update();
-	
-	// Auto-refresh
-	var timeout = function() {
-		setTimeout(function() {
-			update();
-			timeout();
-		}, REFRESH_TIME);
-	};
-//	timeout();
-	
-});
-        */
