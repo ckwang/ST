@@ -1,14 +1,17 @@
 {% extends "layout.html" %}
 
+{% block head %}
+    <script src="{{ url_for('static', filename='controllers/formCtrl.js') }}"></script>
+{% endblock %}
+
 {% block before %}
-	<div class="container">
-	  {% for message in get_flashed_messages() %}
-		<div class="alert alert-block fade in">
+	<div class="container" ng-init='addMessages({{ get_flashed_messages()|tojson|safe }})'>
+		<div ng-repeat='message in messages' class="alert alert-block fade in">
 			<a class="close" data-dismiss="alert" href="#">×</a>
-			{{ message }}
+			[[ message ]]
 		</div>
-	  {% endfor %}
 	</div>
+
 {% endblock %}
 
 {% block body %}
