@@ -1,7 +1,5 @@
 {% extends "form.html" %}
-{% block head %}
-	<script src="{{ url_for('static', filename='login.js') }}"></script>
-{% endblock %}
+
 
 {% block left %}
 	<div class="hero-unit">
@@ -11,30 +9,34 @@
 {% endblock %}
 
 {% block form %}
-<form class="form-horizontal" method="post" action="login">
-	<fieldset>
-	<legend> Login </legend>
-		<div class="control-group" id="usernameGroup">
-			<label class="control-label">Username</label>
-			<div class="controls" id="usernameControl">
-				<input class="input-small" type=text name=username id="username">
-			</div>
-		</div>
-		<div class="control-group" id="passwordGroup">
-			<label class="control-label">Password</label>
-			<div class="controls" id="passwordControl">
-				<input class="input-small" type=password name=password id="password">
-			</div>
-		</div>
-		<div class="control-group" id="rememberMeGroup">
-			<label class="control-label">Remember me</label>
-			<div class="controls">
-				<input type=checkbox name=remember value=yes>
-			</div>
-		</div>
-		<div class="form-actions">
-			<input class="btn btn-large btn-primary" type=submit value=Login>
-		</div>
-	</fieldset>
+<form novalidate class="form-horizontal" method="post" action="login" name="form">
+    <fieldset>
+        <legend> Login </legend>
+        <div class="control-group" id="usernameGroup" ng-class="{warning: form.username.$invalid && form.username.$dirty}">
+            <label class="control-label">Username</label>
+            <div class="controls" id="usernameControl">
+                <input class="input-small" type="text" ng-model="user.name" name="username" id="username" required>
+                <span class="help-inline" ng-show="form.username.$invalid && form.username.$dirty">Please enter username.</span>
+            </div>
+        </div>
+        <div class="control-group" id="passwordGroup" ng-class="{warning: form.password.$invalid && form.password.$dirty}">
+            <label class="control-label">Password</label>
+            <div class="controls" id="passwordControl">
+                <input class="input-small" type="password" ng-model="user.password" name="password" id="password" required>
+                <span class="help-inline" ng-show="form.password.$invalid && form.password.$dirty">Please enter username.</span>
+            </div>
+        </div>
+        <div class="control-group" id="rememberMeGroup">
+            <label class="control-label">Remember me</label>
+            <div class="controls">
+                <input type="checkbox" name="remember" value="yes">
+            </div>
+        </div>
+        <div class="form-actions">
+            <input class="btn btn-info" type="reset" value="Reset" ng-click="reset()">
+            <input class="btn btn-primary" type="submit" value="Submit" ng-disabled="form.$invalid">
+        </div>
+    </fieldset>
 </form>
+
 {% endblock %}

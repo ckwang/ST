@@ -47,7 +47,7 @@ def login():
 		else:
 			flash(u"Invalid username and password.")
 			
-	return render_template("login.html")
+	return render_template("login.html", ngctrl="FormCtrl")
 
 # sign up
 @app.route("/register/", methods=["GET", "POST"])
@@ -70,7 +70,7 @@ def register():
 		else:
 			flash(u"Invalid action.")
 	
-	return render_template("register.html")
+	return render_template("register.html", ngctrl="FormCtrl")
 
 @app.route("/reauth/", methods=["GET", "POST"])
 @login_required
