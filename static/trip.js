@@ -1,23 +1,27 @@
 //
-//	Initialize the generic Model, View and Controller
+//  Initialize the generic Model, View and Controller
 //
+superTripperApp.controller('TripCtrl', function($scope) {
+
+
+});
+
 var View = {};
 var Model = {};
 var Controller = {};
-var REFRESH_TIME = 5000;	// Time interval for auto-refreshing in milliseconds
+var REFRESH_TIME = 5000;  // Time interval for auto-refreshing in milliseconds
 $(document).ready(function() {
-	Controller.initialize();
-	View.initialize();
-	
-	Model.Permission.bind(Permission.setElementPermission);
-	
-	// Auto-refresh
-	var timeout = function() {
-		setTimeout(function() {
-			Controller.Update.update();
-			timeout();
-		}, REFRESH_TIME);
-	};
-	timeout();
-
+  Controller.initialize();
+  View.initialize();
+  
+  Model.Permission.bind(Permission.setElementPermission);
+  
+  // Auto-refresh
+  var timeout = function() {
+    setTimeout(function() {
+      Controller.Update.update();
+      timeout();
+    }, REFRESH_TIME);
+  };
+  timeout();
 });

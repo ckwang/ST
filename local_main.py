@@ -102,7 +102,7 @@ def getUserID():
 def showTrip(trip_id=None):
 	if trip_id:
 		if getPermission(trip_id) > 0:
-			return render_template("trip.html")
+			return render_template("trip.html", ngctrl="TripCtrl")
 		else:
 			flash(u"You cannot view the requested trip.")
 	
