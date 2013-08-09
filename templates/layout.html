@@ -1,8 +1,9 @@
-{# block head: used for importing more style/ scripts 
-block nav: inside navbar <ul> tag
-block body: inside body container #}
-<!DOCTYPE html>
-<html lang="en">
+{# block head: used for importing more style/ scripts
+block nav: inside navbar
+<ul> tag
+  block body: inside body container #}
+  <!DOCTYPE html>
+  <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Super Tripper</title>
@@ -12,53 +13,58 @@ block body: inside body container #}
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-{#    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"> #}
-    <link href="{{ url_for('static', filename='super-tripper.css') }}" rel="stylesheet"> 
+    {#
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    #}
+    <link href="{{ url_for('static', filename='super-tripper.css') }}" rel="stylesheet">
     <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.4.0.js"></script>
 
-{#    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script> #}
+    {#
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    #}
     <script src="{{ url_for('static', filename='base.js') }}"></script>
 
-  {% block head %}
-  {% endblock %}
+    {% block head %}
+    {% endblock %}
   </head>
 
-  <body ng-app="superTripperApp" 
-    {% if ngctrl %} 
-    ng-controller="{{ ngctrl }}" ng-init="Init()"
-    {% endif %}
+  <body ng-app="superTripperApp"
+  {% if ngctrl %}
+  ng-controller="{{ ngctrl }}" ng-init="Init()"
+  {% endif %}
   >
 
-    <div class="navbar navbar-fixed-top height-fixed">
-      <div class="navbar-inner">
-        <div class="st-container">
-       <a class="brand" href="{{ url_for('showTrip') }}">Super Tripper</a> 
-      <ul class="nav">
-        {% block nav %}
-        {% endblock %}
-      </ul>
-      <ul class="nav pull-right">
-        {% block nav_right %}
-        {% endblock %}
-        {% if current_user.is_authenticated() %}
+  <div class="navbar navbar-fixed-top height-fixed">
+    <div class="navbar-inner">
+      <div class="st-container">
+        <a class="brand" href="{{ url_for('showTrip') }}">Super Tripper</a>
+        <ul class="nav">
+          {% block nav %}
+          {% endblock %}
+        </ul>
+        <ul class="nav pull-right">
+          {% block nav_right %}
+          {% endblock %}
+          {% if current_user.is_authenticated() %}
           <li class="active"><a>Hi, <strong>{{ current_user.username }}</strong></a></li>
           <li><a href="{{ url_for('logout') }}">Logout</a></li>
-        {% else %}
+          {% else %}
           <li><a href="{{ url_for('login') }}">Login</a></li>
           <li><a href="{{ url_for('register') }}">Register</a></li>
-        {% endif %}
-      </ul>
-        </div>
+          {% endif %}
+        </ul>
       </div>
     </div>
-{% block before %}
-{% endblock %}
-    <div class="st-container height-floating" id="bodyContainer">
-  {% block body %}
+  </div>
+  {% block before %}
   {% endblock %}
+  <div class="st-container height-floating" id="bodyContainer">
+    {% block body %}
+    {% endblock %}
 
-    </div> <!-- /container -->
+  </div>
+  <!-- /container -->
   {% block after %}
   {% endblock %}
   </body>
-</html>
+  </html>
