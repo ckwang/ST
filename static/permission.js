@@ -1,4 +1,4 @@
-angular.module('Filters', []).filter('permission', function() {
+superTripperApp.filter('permission', function() {
   return function (text) {
     var i = parseInt(text);
     switch(i) {
