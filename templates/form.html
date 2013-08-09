@@ -6,10 +6,7 @@
 
 {% block before %}
 <div class="container" ng-init='addMessages({{ get_flashed_messages()|tojson|safe }})'>
-  <div ng-repeat='message in messages' class="alert alert-block fade in">
-    <a class="close" data-dismiss="alert" href="#">×</a>
-    [[ message ]]
-  </div>
+  <alert ng-repeat="message in messages" close="removeMessage($index)">[[ message ]]</alert>
 </div>
 
 {% endblock %}
