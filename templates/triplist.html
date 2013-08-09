@@ -21,67 +21,67 @@
 
 {% endblock %}
 {% block body %}
+<div class="row">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-block fade in">
+    <a class="close" data-dismiss="alert" href="#">×</a>
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+<div class="container">
   <div class="row">
-    {% for message in get_flashed_messages() %}
-      <div class="alert alert-block fade in">
-        <a class="close" data-dismiss="alert" href="#">×</a>
-        {{ message }}
-      </div>
-    {% endfor %}
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="triplist-container span12">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th class="span1">&nbsp;</th>
-              <th class="span3">Name</th>
-              <th class="span2">Owner</th>
-              <th class="span3">Scheduled Trip Dates</th>
-              <th class="span1">Permission</th>
-            </tr>
-          </thead>
-          <tbody id="listContainer">
-            <tr ng-repeat="trip in trips">
-              <td>
-                <a class="close removeTrip" ng-click="deleteTrip(trip.id)">×</a>
-              </td>
-              <td><a href=[[trip.id]]>[[trip.name]]</a></td>
-              <td>[[trip.owner_name]]</td>
-              <td>[[trip.start_time|date:'yyyy/MM/dd']] - [[trip.end_time|date:'yyyy/MM/dd']]</td>
-              <td>[[trip.permission|permission]]</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    
+    <div class="triplist-container span12">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th class="span1">&nbsp;</th>
+          <th class="span3">Name</th>
+          <th class="span2">Owner</th>
+          <th class="span3">Scheduled Trip Dates</th>
+          <th class="span1">Permission</th>
+        </tr>
+        </thead>
+        <tbody id="listContainer">
+        <tr ng-repeat="trip in trips">
+          <td>
+            <a class="close removeTrip" ng-click="deleteTrip(trip.id)">×</a>
+          </td>
+          <td><a href=[[trip.id]]>[[trip.name]]</a></td>
+          <td>[[trip.owner_name]]</td>
+          <td>[[trip.start_time|date:'yyyy/MM/dd']] - [[trip.end_time|date:'yyyy/MM/dd']]</td>
+          <td>[[trip.permission|permission]]</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
-    <div class="row">
-      <div class="span12">
-        <button class="btn btn-primary newtrip-btn" ng-click="openCreateTrip()">
-          <i class="icon-white icon-plus newtrip-btn"></i>Add a trip
-        </button>
-      </div>
+
+  </div>
+  <div class="row">
+    <div class="span12">
+      <button class="btn btn-primary newtrip-btn" ng-click="openCreateTrip()">
+        <i class="icon-white icon-plus newtrip-btn"></i>Add a trip
+      </button>
     </div>
   </div>
+</div>
 
 
 {% endblock %} <!-- block body -->
 {% block after %}
-  <div modal="createTripOpen" id="createTripModal" options="opts">
-    <div class="modal-header">
-      <button class="close" ng-click="closeCreateTrip()">×</button>
-      <h3>Create a trip</h3>
+<div modal="createTripOpen" id="createTripModal" options="opts">
+  <div class="modal-header">
+    <button class="close" ng-click="closeCreateTrip()">×</button>
+    <h3>Create a trip</h3>
+  </div>
+  <form method="post" action="{{ url_for('newTrip') }}">
+    <div class="modal-body">
+      <input class="input" name="name" id="newtripname">
     </div>
-    <form method="post" action="{{ url_for('newTrip') }}"> 
-      <div class="modal-body">
-        <input class="input" name="name" id="newtripname">
-      </div>
-      <div class="modal-footer">
-        <a href="#" class="btn" ng-click="closeCreateTrip()">Close</a>
-        <button class="btn btn-success" type="submit">Create trip</button>
-      </div>
-    </form> 
-  </div>  
+    <div class="modal-footer">
+      <a href="#" class="btn" ng-click="closeCreateTrip()">Close</a>
+      <button class="btn btn-success" type="submit">Create trip</button>
+    </div>
+  </form>
+</div>
 {% endblock %}

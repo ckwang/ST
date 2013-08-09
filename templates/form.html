@@ -1,34 +1,31 @@
 {% extends "layout.html" %}
 
 {% block head %}
-    <script src="{{ url_for('static', filename='controllers/formCtrl.js') }}"></script>
+<script src="{{ url_for('static', filename='controllers/formCtrl.js') }}"></script>
 {% endblock %}
 
 {% block before %}
-	<div class="container" ng-init='addMessages({{ get_flashed_messages()|tojson|safe }})'>
-		<div ng-repeat='message in messages' class="alert alert-block fade in">
-			<a class="close" data-dismiss="alert" href="#">×</a>
-			[[ message ]]
-		</div>
-	</div>
+<div class="container" ng-init='addMessages({{ get_flashed_messages()|tojson|safe }})'>
+  <alert ng-repeat="message in messages" close="removeMessage($index)">[[ message ]]</alert>
+</div>
 
 {% endblock %}
 
 {% block body %}
 <div class="container">
-	<div class="row">
-		<div class="span12" id="mainContainer">
-			<div class="row">
-				<div class="span8" id="leftContainer">
-					{% block left %}
-					{% endblock %}
-				</div>
-				<div class="span4" id="formContainer">
-					{% block form %}
-					{% endblock %}
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="row">
+    <div class="span12" id="mainContainer">
+      <div class="row">
+        <div class="span8" id="leftContainer">
+          {% block left %}
+          {% endblock %}
+        </div>
+        <div class="span4" id="formContainer">
+          {% block form %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
