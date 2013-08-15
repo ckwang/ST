@@ -7,6 +7,14 @@
 <script type='text/javascript'
         src="{{ url_for('static', filename='jquery-weekcalendar/jquery.weekcalendar.js') }}"></script>
 
+<script>
+  var URL_FOR = {
+    'getUserID': "{{ url_for('getUserID') }}",
+    'trips': "{{ url_for('showTrip') }}",
+    'getTrips': "{{ url_for('getTrips') }}"
+  };
+</script>
+
 <script src="{{ url_for('static', filename='trip.js') }}"></script>
 <script src="{{ url_for('static', filename='TripModel.js') }}"></script>
 <script src="{{ url_for('static', filename='TripView.js') }}"></script>
@@ -33,14 +41,6 @@
 <link href="{{ url_for('static', filename='jQueryTimepicker/timePicker.css') }}" rel="stylesheet">
 <script src="{{ url_for('static', filename='jQueryTimepicker/jquery.timePicker.min.js') }}"></script>
 
-
-<script>
-  var URL_FOR = {
-    'getUserID': "{{ url_for('getUserID') }}",
-    'trips': "{{ url_for('showTrip') }}",
-    'getTrips': "{{ url_for('getTrips') }}"
-  };
-</script>
 
 <link href="{{ url_for('static', filename='trip.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='map.css') }}" rel="stylesheet">
@@ -85,7 +85,11 @@
     My trips
     <b class="caret"></b>
   </a>
-  <ul class="dropdown-menu" id="myTrips-list">
+  <ul class="dropdown-menu" id="myTrips-list" ng-controller="MyTripsCtrl">
+    <li ng-repeat="trip in dataTrips"><a ng-href="[[ TripsURL + trip.id ]]">[[trip.name]]</a></li>
+    <li class="divider"></li>
+    <li style="cursor: pointer"><a ng-click="OpenCreateTripModel()">+ Create a new trip...</a></li>
+
   </ul>
 </li>
 {% endblock %}
@@ -102,7 +106,15 @@
     </div>
   </div>
   <div class="subContainer width-floating">
-    <div id="logContainer" class="pull-right"></div>
+    <div id="logContainer" class="pull-right" ng-controller="LogCtrl">
+      <div class="alert alert-error" id="log-content" ng-show="dataLogs">
+        <strong>[[dataLogs[0].username]]</strong>
+        <span ng-show="dataLogs[0].type==1">added <strong>[[dataLogs[0].event]]</strong> to the schedule.</span>
+        <span ng-show="dataLogs[0].type==2">updated <strong>[[dataLogs[0].event]]</strong></span>
+        <span ng-show="dataLogs[0].type==3">rescheduled the itinerary</span>
+        <span ng-show="dataLogs[0].type==4">deleted <strong>[[dataLogs[0].event]]</strong> from the schedule.</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -214,7 +226,7 @@
   </div>
 
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal">Close</a>
+    <button class="btn" data-dismiss="modal">Close</button>
       <button class="btn btn-primary" id="editEvent-confirm-btn">Add</button>
   </div>
 </div>

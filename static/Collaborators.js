@@ -1,3 +1,31 @@
+//superTripperApp.controller('CollaboratorsCtrl', function($scope, $http, $timeout, Params) {
+//  $scope.invite = function(callback) {
+//    var username = View.Invite.getUsername();
+//    var permission = View.Invite.getPermission();
+//    View.Invite.clear();
+//    if (username) {
+//      // Find the userID of this user
+//      $.get(URL_FOR.getUserID, {'username': username} ,function(response) {
+//        var id = response.id;
+//        if(id) {
+//          $.post("collaborators/add", {'user_id': id, 'permission': permission}, function(response) {
+//            that.update(response, callback);
+//          });
+//        } else {
+//          callback();
+//        }
+//      });
+//    } else {
+//      callback();
+//    }
+//  }
+//
+//  $scope.update = function(response, callback) {
+//
+//  }
+//
+//});
+
 //
 // Model
 //

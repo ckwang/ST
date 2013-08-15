@@ -16,7 +16,7 @@ View.Event = new function() {
 		var end_date = $('#editEvent-endDate').val();
 		var start_time_date = new Date(start_date + " " + $('#editEvent-startTime').val());
 		var end_time_date = new Date(end_date + " " + $('#editEvent-endTime').val());
-		var suggested_interval = parseInt($('#editEvent-suggestedInterval').val())
+		var suggested_interval = parseInt($('#editEvent-suggestedInterval').val());
 	
 		return {
 			'id': $('#editEvent-id').val(),
@@ -51,7 +51,7 @@ View.Event = new function() {
 	};
 	
 	var setDate = function(dateObj, dateElement) {
-		date_value = toDateString(dateObj);
+		var date_value = toDateString(dateObj);
 		dateElement.val(date_value);
 		dateElement.parent().attr("data-date", date_value);
 		dateElement.attr("value", date_value);
@@ -390,7 +390,7 @@ View.Event = new function() {
      		},
      		eventNew : function(calEvent, $event) {
      			$event.remove();
-     		},
+     		}
 		});
 		//-----------------------------------------
 		// The sortable feature of events list	
@@ -671,7 +671,7 @@ Controller.Event = new function() {
 		if (response) {
 			Model.Event.set(response.events);
 			Model.Permission.set(response.permission, true);
-			Model.Log.set(response.logs)
+			Model.Log.set(response.logs);
 		} else {
 			$.get('events', that.update);
 		}
