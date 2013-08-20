@@ -35,11 +35,16 @@ class Base(object):
       if k in columns:
         self.__setattr__(k, v)
   
-  def to_dict(self):
+  def to_dict(self, fields=None):
+    """
+    Args:
+      fields: None or an iterable of str
+    """
     d = {}
     columns = [c.name for c in self.__table__.columns]
     for k in columns:
-      d[k] = self.__dict__[k]
+      if fields is None or k in fields:
+        d[k] = self.__dict__[k]
     return d
 
 class User(db.Model, Base, UserMixin):
@@ -314,6 +319,14 @@ class Location(db.Model, Base):
   
   def to_tuple(self):
     return (self.name, self.lat, self.lng)
+
+  @staticmethod
+  def get_locations_around(lat, lng, lat_delta=0.05, lng_delta=0.05):
+    return db.session.query(Location).\
+      filter(Location.lat > lat - lat_delta).\
+      filter(Location.lat < lat + lat_delta).\
+      filter(Location.lng > lng - lng_delta).\
+      filter(Location.lng < lng + lng_delta)
 
 class Log(db.Model, Base):
   __tablename__ = "logs"
