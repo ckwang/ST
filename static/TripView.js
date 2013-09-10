@@ -1,12 +1,12 @@
 // The generic View object. Initialize View.
 View.initialize = function() {
 	var that = this;
-	this.Collaborators.initialize();
+//	this.Collaborators.initialize();
 	this.EventTypes.initialize();
-	this.Invite.initialize();
+//	this.Invite.initialize();
 	this.Event.initialize();
-	this.MyTrips.initialize();
-	this.Log.initialize();
+//	this.MyTrips.initialize();
+//	this.Log.initialize();
 	
 	// Modals
 	$('.modal').modal();

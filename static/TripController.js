@@ -7,10 +7,10 @@
 
 Controller.Update = new function() {
   this.update = function() {
-    Controller.Collaborators.update();
+//    Controller.Collaborators.update();
     Controller.EventTypes.update();
     Controller.Event.update();
-    Controller.MyTrips.update();
+//    Controller.MyTrips.update();
     $.get('permission', function(response) {
       // Logout to triplist page if the user does not have permission to view this page
       if (response.permission === 0) {
@@ -32,9 +32,9 @@ Controller.Update = new function() {
 }
 Controller.initialize = function() {
   this.EventTypes.initialize();
-  this.Collaborators.initialize();
+//  this.Collaborators.initialize();
   this.Update.initialize();
   this.Event.initialize();
   this.Map.initialize();
-  this.MyTrips.initialize();
+//  this.MyTrips.initialize();
 }

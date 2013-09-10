@@ -75,10 +75,67 @@
 
 {% block nav_right %}
 <li>
-  <button class="btn btn-inverse" id="collaborators-btn">
-    <i class='icon-user icon-white'></i>
-    Collaborators
-  </button>
+  <div ng-controller="CollaboratorsCtrl">
+    <button class="btn btn-inverse" id="collaborators-btn" ng-click="open()">
+      <i class='icon-user icon-white'></i>
+      Collaborators
+    </button>
+    <div modal="isOpenFlag">
+      <div class="modal-header">
+        <a class="close" ng-click="close()">×</a>
+        <h3>Collaborators</h3>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="span2"><h4>Username</h4></div>
+          <div class="span2"><h4>Permission</h4></div>
+        </div>
+        <hr>
+        <div id="collaborators" ng-repeat="c in tempDataCollaborators" name="collaborators">
+          <div class="row">
+            <div class="span2">[[c.username]]</div>
+            <div class="span2 select">
+              <select class="input-small collaborator permission" ng-model="c.permission" ng-change="setDirty()" ng-disabled="c.permission==4" id="c.id">
+                <option value="1" ng-selected="c.permission==1" ng-show="c.permission==4">Can view</option>
+                <option value="2" ng-selected="c.permission==2" ng-show="c.permission==4">Can edit</option>
+                <option value="3" ng-selected="c.permission==3" ng-show="c.permission==4">Can share</option>
+                <option value="4" ng-selected="c.permission==4" disabled="disabled" ng-show="c.permission==4">Is owner</option>
+              </select>
+            </div>
+            <div class="span1 removeCollaborator" id="c.id" ng-show="c.permission!=4">
+              <a class="close" ng-click="remove(c.id)">&times;</a>
+            </div>
+          </div>
+        </div>
+        <div ng-show="dataPermission>=3" id="invite-container">
+          <div class="well" id="invite-input" ng-show="!isDirtyFlag">
+            <div>Add an collaborator</div>
+            <input class="input span2" id="inviteName" ng-model="collaborators.inviteName" placeholder="Type in an username...">
+            <select class="input-small" id="invite-permission" ng-model="collaborators.invitePermission" ng-show="collaborators.inviteName">
+              <option value="1">Can view</option>
+              <option value="2">Can edit</option>
+              <option value="3">Can share</option>
+            </select>
+
+            <p id="invite-control" ng-show="collaborators.inviteName">
+              <a href="#" class="btn btn-success" id="invite-confirm-btn" ng-click="invite(collaborators.inviteName, collaborators.invitePermission)">Share</a>
+              <a href="#" class="btn" id="invite-cancel-btn" ng-click="clearInvite()">Cancel</a>
+            </p>
+          </div>
+          <div class="well" id="invite-alt" ng-show="isDirtyFlag">
+            You have made changes that you need to save.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-primary" id="collaborators-done-btn" ng-show="!isDirtyFlag && !collaborators.inviteName" ng-click="close()">Done</a>
+        <a href="#" class="btn btn-success" id="collaborators-confirm-btn" ng-show="isDirtyFlag" ng-click="commitChanges()">Save Changes</a>
+        <a href="#" class="btn" id="collaborators-cancel-btn" ng-show="isDirtyFlag" ng-click="close()">Cancel</a>
+      </div>
+
+    </div>
+  </div>
+
 </li>
 <li class="dropdown" id="myTrips">
   <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
@@ -88,8 +145,23 @@
   <ul class="dropdown-menu" id="myTrips-list" ng-controller="MyTripsCtrl">
     <li ng-repeat="trip in dataTrips"><a ng-href="[[ TripsURL + trip.id ]]">[[trip.name]]</a></li>
     <li class="divider"></li>
-    <li style="cursor: pointer"><a ng-click="OpenCreateTripModel()">+ Create a new trip...</a></li>
+    <li style="cursor: pointer"><a ng-click="openCreateTripModal()">+ Create a new trip...</a></li>
 
+    <div modal="isCreateTripModalOpenFlag">
+      <div class="modal-header">
+        <button class="close" ng-click="closeCreateTripModal()">×</button>
+        <h3>Create a trip</h3>
+      </div>
+      <form method="post" action="{{ url_for('newTrip') }}">
+        <div class="modal-body">
+          <input class="input" name="name" id="newtripname">
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" ng-click="closeCreateTripModal()">Close</a>
+          <button class="btn btn-success" type="submit">Create trip</button>
+        </div>
+      </form>
+    </div>
   </ul>
 </li>
 {% endblock %}
@@ -125,13 +197,39 @@
 <div class="height-floating width-floating subContainer" id="event-calendar">
   <div id="calendar"></div>
 </div>
-<div class="width-fixed subContainer" id="eventsContainer">
+<div class="width-fixed subContainer" id="eventsContainer" ng-controller="EventCtrl">
   <h3 class="height-fixed">Scheduled Itinerary</h3>
 
   <div class="height-fixed">&nbsp;</div>
   <div class="gray height-floating" id="event-list">
     <div id="events" class="height-floating">
-      <ul id="events-list" class="nav nav-pills nav-stacked">
+      <ul id="events-list" class="nav nav-pills nav-stacked" ui-sortable="sortableOptions" ng-model="dataEvents">
+        <li id="$index" ng-repeat="e in dataEvents">
+          <a style="cursor: move;">
+            <table class="event-table">
+              <tbody>
+                <tr>
+                  <td class="event-marker"></td>
+                  <td class="event-name" rel="popover">[[ e.name ]]</td>
+                  <td class="event-icons">
+                    <i class="icon-pencil clickable hide-plevel-2 updateEvent" ng-click="showUpdateEvent(e)"></i>
+                    <a class="close hide-plevel-2 removeEvent" ng-click="removeEvent(e.id)">&times;</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </a>
+          <div class="travelTime" ng-show="isTravelTimeShownFlag">
+            <table>
+              <tbody>
+                <tr>
+                  <td class="travelTime-arrow"><a class="icon-arrow-down"></a></td>
+                  <td class="travelTime-time">sdf</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </li>
       </ul>
     </div>
     <div id="events-optimized" class="height-floating">
@@ -165,7 +263,7 @@
 
 {% endblock %} <!-- block body -->
 {% block after %}
-<div class="modal" id="editEvent-modal">
+<div class="modal" id="editEvent-modal" ng-controller="EventCtrl">
   <div class="modal-header">
     <a class="close" data-dismiss="modal">×</a>
 
@@ -227,63 +325,7 @@
 
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">Close</button>
-      <button class="btn btn-primary" id="editEvent-confirm-btn">Add</button>
+    <button class="btn btn-primary" id="editEvent-confirm-btn">Add</button>
   </div>
 </div>
-
-<div class="modal" id="collaborators-modal">
-  <div class="modal-header">
-    <a class="close" data-dismiss="modal">×</a>
-
-    <h3>Collaborators</h3>
-  </div>
-  <div class="modal-body">
-    <div class="row">
-      <div class="span2"><h4>Username</h4></div>
-      <div class="span2"><h4>Permission</h4></div>
-    </div>
-    <hr>
-    <div id="collaborators">
-    </div>
-    <div class="hide-plevel-3" id="invite-container">
-      <div class="well" id="invite-input">
-        <div>Add an collaborator</div>
-        <input class="input span2" id="inviteName" placeholder="Type in an username...">
-        <select class="input-small" id="invite-permission"></select>
-
-        <p id="invite-control">
-          <a href="#" class="btn btn-success" id="invite-confirm-btn">Share</a>
-          <a href="#" class="btn" id="invite-cancel-btn">Cancel</a>
-        </p>
-      </div>
-      <div class="well" id="invite-alt">
-        You have made changes that you need to save.
-      </div>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn btn-primary" id="collaborators-done-btn" data-dismiss="modal">Done</a>
-
-    <a href="#" class="btn btn-success" id="collaborators-confirm-btn">Save Changes</a>
-    <a href="#" class="btn" id="collaborators-cancel-btn">Cancel</a>
-
-  </div>
-
-</div>
-<div class="modal" id="createTripModal">
-  <div class="modal-header">
-    <button class="close" data-dismiss="modal">×</button>
-    <h3>Create a trip</h3>
-  </div>
-  <form method="post" action="{{ url_for('newTrip') }}">
-    <div class="modal-body">
-      <input class="input" name="name" id="newtripname">
-    </div>
-    <div class="modal-footer">
-      <a href="#" class="btn" data-dismiss="modal">Close</a>
-      <button class="btn btn-success" type="submit">Create trip</button>
-    </div>
-  </form>
-</div>
-
 {% endblock %} <!-- block after -->

@@ -15,19 +15,46 @@ superTripperApp.controller('TripCtrl', function($scope, $timeout, Params) {
 
   $scope.dataLogs = {};
   $scope.dataTrips = {};
+  $scope.dataCollaborators = {};
+  $scope.dataEvents = {};
+  $scope.dataPermission = 0;
 
   $scope.Update = function() {
     $.get(URL_FOR['getTrips'], function(response) {
       $scope.dataTrips = response.trips;
       $scope.$apply();
-      console.log($scope.dataTrips);
-      console.log(Params.TRIPS_URL);
     });
+
+    $.get('collaborators', function(response) {
+      $scope.dataCollaborators = response.collaborators;
+      $scope.$apply();
+    });
+
+    $.get('permission', function(response) {
+      // Logout to triplist page if the user does not have permission to view this page
+      if (response.permission === 0) {
+        alert('You do not have permission to view this page.');
+        $('#home-btn').click();
+      }
+      $scope.dataPermission = response.permission;
+      $scope.$apply();
+    });
+
+    $.get('events', function(response) {
+      $scope.dataEvents = response.events;
+      $scope.dataPermission = response.permission;
+      $scope.dataLogs = response.logs;
+      $scope.$apply();
+    });
+
   };
 
-  $timeout(function() {
+  var periodicUpdate = function() {
     $scope.Update();
-  }, Params.REFRESH_TIME);
+    $timeout(periodicUpdate, Params.REFRESH_TIME);
+  };
+
+  periodicUpdate();
 });
 
 var View = {};

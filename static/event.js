@@ -2,8 +2,141 @@
 //	Handles event
 //
 
-// View.Event: Renders the list view and the calendar view of schedule
-// Controller.Event: handles AJAX calls about event updating
+superTripperApp.controller('EventCtrl', function($scope, $http, $timeout, Params) {
+  $scope.isTravelTimeShownFlag = true;
+  $scope.editEventData;
+
+  $scope.showUpdateEvent = function() {}
+
+  $scope.removeEvent = function() {}
+
+  $scope.sortableOptions = {
+			update: function(event, ui) {
+//				var indexArray = $(this).sortable('toArray').filter(function(e) {return !(e.match('time-'))});
+//				var index = ui.item.attr('id');
+//				var newIndex = jQuery.inArray(index + '', indexArray);
+//				var events = Model.Event.get();
+//				var updatesToMake = [];
+//				var data = Model.Event.copy(index);
+//				index = parseInt(index);
+//				if (index !== newIndex) {
+//					// Remove all travelTime
+//					$(this).children('.travelTime').remove();
+//
+//					var timeInterval =  events[index]['end_time'] - events[index]['start_time'];
+//
+//					// Determine the new start time
+//					switch(newIndex) {
+//						// It becomes the first event
+//						case 0:
+//							data['end_time'] = events[0]['start_time'];
+//							data['start_time'] = data['end_time'] - timeInterval;
+//							updatesToMake.push(data);
+//							break;
+//						// It becomes the last event
+//						case (indexArray.length - 1):
+//							data['start_time'] = events[events.length - 1]['end_time'];
+//							data['end_time'] = data['start_time'] + timeInterval;
+//							updatesToMake.push(data);
+//							break;
+//						// It becomes an event in the middle
+//						default:
+//							if (newIndex < index) {	// Moving up
+//								// Update the moved event itself
+//								data['start_time'] = events[newIndex - 1]['end_time'];
+//								data['end_time'] = data['start_time'] + timeInterval;
+//								updatesToMake.push(data);
+//								// Update all the events after if necessary
+//								for (var i = newIndex; i < events.length; i++) {
+//									if (i !== index) {
+//										if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
+//											var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
+//											var newData = Model.Event.copy(i);
+//											newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
+//											newData['end_time'] = newData['start_time'] + eventTimeInterval;
+//											updatesToMake.push(newData);
+//										} else {
+//											break;
+//										}
+//									}
+//								}
+//							} else if (newIndex > index) {	// Moving down
+//								// Move the events above up
+//								for (var i = index + 1; i <= newIndex; i++) {
+//									var newData = Model.Event.copy(i);
+//									newData['start_time'] -= timeInterval;
+//									newData['end_time'] -= timeInterval;
+//									updatesToMake.push(newData);
+//								}
+//								// Update the moved event itself
+//								data['start_time'] = updatesToMake[updatesToMake.length - 1]['end_time'];
+//								data['end_time'] = data['start_time'] + timeInterval;
+//								updatesToMake.push(data);
+//								// Update all events after
+//								for (var i = newIndex + 1; i < events.length; i++) {
+//									if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
+//										var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
+//										var newData = Model.Event.copy(i);
+//										newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
+//										newData['end_time'] = newData['start_time'] + eventTimeInterval;
+//										updatesToMake.push(newData);
+//									} else {
+//										break;
+//									}
+//								}
+//							}
+//							break;
+//					}
+//					// Disable the sortable before all requests are sended
+//					$('#events-list').sortable('disable');
+//					Controller.Event.updateEventTimes(updatesToMake);
+//					$('#events-list').sortable('enable');
+//					showTravelTime();
+//				// Nothing changed, just rerenderer the list based on Model data
+//				} else {
+//					that.updateList(Model.Event.get(), Model.Map.get()['timelist']);
+//				}
+			},
+			// Do not trigger sortable feature if dragging is done on a travel time
+			cancel: '.travelTime',
+			// Hide all travelTime when drag starts
+			start: function() {
+        $scope.isTravelTimeShownFlag = false;
+        //$scope.$apply();
+				// Preserve the spacing for travel time when drag starts
+				$('#events-list').find('li').css('margin-bottom', 17);
+			},
+			// Show all travelTime when drag ends
+			stop: function() {
+        $scope.isTravelTimeShownFlag = true;
+				$('#events-list').find('li').css('margin-bottom', 0);
+			}
+		};
+
+//
+//  var DEFAULT_EVENT_LENGTH = 60 * 60000;
+//
+//  // set data for the edit event
+//  $scope.setEditEventData = function(data) {
+//    $scope.editEventData = angular.copy(data);
+//    if (!$scope.editEventData.name) {
+//      $scope.editEventData.name = $scope.editEventData.location_names[0];
+//    }
+//    var latestEndTime = $scope.dataEvents.length > 0?
+//      $scope.dataEvents[$scope.dataEvents.length - 1].end_time:
+//      (Math.ceil((new Date()).getTime() / 30 / 60000) * 30 * 60000);
+//    if (!$scope.editEventData.start_time) {
+//      $scope.editEventData.start_time = latestEndTime;
+//    }
+//    if (!scope.editEventData.end_time) {
+//      $scope.editEventData.end_time = latestEndTime + DEFAULT_EVENT_LENGTH;
+//    }
+//  };
+
+});
+
+//View.Event: Renders the list view and the calendar view of schedule
+//Controller.Event: handles AJAX calls about event updating
 
 
 View.Event = new function() {
@@ -17,7 +150,7 @@ View.Event = new function() {
 		var start_time_date = new Date(start_date + " " + $('#editEvent-startTime').val());
 		var end_time_date = new Date(end_date + " " + $('#editEvent-endTime').val());
 		var suggested_interval = parseInt($('#editEvent-suggestedInterval').val());
-	
+
 		return {
 			'id': $('#editEvent-id').val(),
 			'name': $('#editEvent-name').val(),
@@ -32,24 +165,24 @@ View.Event = new function() {
 			'location_lngs[]': parseFloat([$('#editEvent-locationLng').text()])
 		}
 	};
-	
+
 
 	var formatDigit = function(num) {
 		return num < 10 ? ('0' + num) : num;
 	};
-	
+
 	var toDateString = function(dateObj) {
 		var month = formatDigit(dateObj.getMonth()+1);
 		var date = formatDigit(dateObj.getDate());
 		return month + "/" + date + "/" + dateObj.getFullYear();
 	};
-	
+
 	var toTimeString = function(dateObj) {
 		var hours = formatDigit(dateObj.getHours());
 		var minutes = formatDigit(dateObj.getMinutes());
 		return hours + ":" + minutes;
 	};
-	
+
 	var setDate = function(dateObj, dateElement) {
 		var date_value = toDateString(dateObj);
 		dateElement.val(date_value);
@@ -57,21 +190,21 @@ View.Event = new function() {
 		dateElement.attr("value", date_value);
 		dateElement.datepicker('update');
 	};
-	
+
 	var setTime = function(dateObj, timeElement) {
 		timeElement.val(toTimeString(dateObj));
 	};
 	// Show travel time on the event list
 	var showTravelTime = function() {
 		// Bind listener to listen to time change
-		
+
 		var genHighlighter = function(index){
 			return function() {View.Map.highlightRoute(index)};
 		}
 		var genUnHighlighter = function(index){
 			return function() {View.Map.unhighlightRoute(index)};
 		}
-		
+
 		Model.Map.unbind();
 		Model.Map.bind(function(e) {
 			$('.travelTime-time').empty();
@@ -99,7 +232,7 @@ View.Event = new function() {
 			// Check if there's a travel time
 			if (travelTimeDiv.length > 0) {
 				// Convert into milliseconds and compare
-				if (parseInt(travelTimeDiv.data('time')) * 1000 > 
+				if (parseInt(travelTimeDiv.data('time')) * 1000 >
 					(events[i+1]['start_time'] - events[i]['start_time'])) {
 					travelTimeDiv.find('.travelTime-time').prepend(
 						$('<a class="badge badge-warning warning warning-travelTime">')
@@ -123,7 +256,7 @@ View.Event = new function() {
 			$('#cal-view-btn').removeClass('btn-danger').addClass('btn-warning').removeClass('btn-info');
 		}
 	}
-	
+
 	// set data for the edit event
 	this.setEditEventData = function(data) {
 		$('#editEvent-id').val(data.id);
@@ -140,8 +273,8 @@ View.Event = new function() {
 		// Set a default time
 		} else {
 			events = Model.Event.get();
-			latestEndTime = events.length > 0? 
-				events[events.length - 1].end_time: 
+			latestEndTime = events.length > 0?
+				events[events.length - 1].end_time:
 				(Math.ceil((new Date()).getTime() / 30 / 60000) * 30 * 60000);
 			setDateAndTime(latestEndTime, $('#editEvent-startDate'), $('#editEvent-startTime'));
 		}
@@ -155,10 +288,10 @@ View.Event = new function() {
 		$('#editEvent-locationLat').text(data.location_lats[0]);
 		$('#editEvent-locationLng').text(data.location_lngs[0]);
 	};
-	
+
 	var clearEditEventData = function() {
 		$('#editEvent-name').val('');
-		$('#editEvent-type').val('');	
+		$('#editEvent-type').val('');
 		$('#editEvent-startTime').val('');
 		$('#editEvent-endTime').val('');
 		$('#editEvent-suggestedInterval').val('');
@@ -168,7 +301,7 @@ View.Event = new function() {
 		$('#editEvent-endTimeGroup').removeClass('error');
 		$('#addEventType-name').val('');
 	};
-	
+
 	var showEditEvent = function(title, btnText, clickHandler) {
 		return function(data) {
 			clearEditEventData();
@@ -189,23 +322,23 @@ View.Event = new function() {
 			$('#editEvent-modal').modal('show');
 		};
 	};
-	
+
 	this.showAddEvent = function(data) {
 		showEditEvent('Add an event', 'Add', Controller.Event.addEvent)(data);
 	};
-	
+
 	this.showUpdateEvent = function(data) {
 		showEditEvent('Update the event', 'Update', Controller.Event.updateEvent)(data);
 	};
-	
+
 	this.updateCalendar = function(events) {
 		var year = new Date().getFullYear();
 		var month = new Date().getMonth();
 		var day = new Date().getDate();
-		
+
 		//var events = Model.Event.get();
 		var calendar_events = [];
-		
+
 		events.forEach(function(event, index) {
 			calendar_events.push({
 				"id": event.id,
@@ -215,47 +348,47 @@ View.Event = new function() {
 				"event": event
 			});
 		});
-	
+
 		$("#calendar").weekCalendar("option", {
 			data: {
 				events : calendar_events
 			}
 		}).weekCalendar("refresh");
 	};
-	
+
 	this.updateCalendarPermission = function(permission) {
 		$("#calendar").weekCalendar("option", {
 			readonly: permission < 2
 		}).weekCalendar("refresh");
 	};
-	
+
 	this.updateList = function(events, timelist) {
 		$('.travelTime').remove();
 		$('#events-list').empty();
 		var hasConflict = false;
-		
+
 		if (events) {
 			var table = $('#events-list');
 			var latestTime;		// The latest endtime
 			var latestEventElement;	// The event element with latest endtime
 			events.forEach(function(event, index) {
 				var row = $('<li>').css('cursor', 'move').attr('id', index).append($('<a>').append($('<table class="event-table">').append($('<tr>'))));
-				
+
 				// the marker pin
 				var pin = $('<td class="event-marker">').append($('<img>').attr('src', View.Map.getMarkerIconURL(index)));
 				row.find('tr').append(pin);
-				
+
 				// the name
 				var name = $('<td class="event-name" rel="popover">').html(event.name);
 				var start_time_date = new Date(event.start_time);
 				var end_time_date = new Date(event.end_time);
 				row.find('tr').append(name);
 				row.hover(function() {//name.popover("show")
-									   View.Map.highlightEventMarker(event.id)}, 
+									   View.Map.highlightEventMarker(event.id)},
 						   function() {//$(".popover").remove()
 									   View.Map.unhighlightEventMarker(event.id)});
 				row.click(function() {View.Map.panToEventMarker(event.id)});
-				
+
 				var cell_edit = $('<td class="event-icons">');
 				// the update button
 				var update_btn = $('<i class="icon-pencil clickable hide-plevel-2 updateEvent"></i>');
@@ -269,13 +402,13 @@ View.Event = new function() {
 					Controller.Event.removeEvent(event.id);
 					e.stopPropagation();
 				});
-				
+
 				cell_edit.append(update_btn);
 				cell_edit.append(delete_btn);
 				row.find('tr').append(cell_edit);
-				
+
 				table.append(row);
-				
+
 				// If there's a latest time...
 				if (latestTime) {
 					// If there's a conflict...
@@ -322,18 +455,18 @@ View.Event = new function() {
 			showTravelTime();
 		}
 	};
-	
+
 	this.getEventContent = function(event) {
 		var start_time_date = new Date(event.start_time);
 		var end_time_date = new Date(event.end_time);
-		
-		return '<table><tr><td class="event-popover-content-left"><i class="icon-map-marker"></i><b>Location</b></td><td>' 
-		+ event.location_names[0] + '</td></tr>' 
-		+'<tr><td class="event-popover-content-left"><i class="icon-tag"></i><b>Event type</b></td><td>' 
-		+ Model.EventTypes.getById(event.type_id).name + '</td></tr>' 
-		+'<tr><td class="event-popover-content-left"><i class="icon-time"></i><b>Start time</b></td><td>' 
-		+ toDateString(start_time_date) + ' ' + toTimeString(start_time_date) + '</td></tr>' 
-		+'<tr><td class="event-popover-content-left"><i class="icon-time"></i><b>End time</b></td><td>' + toDateString(end_time_date) + ' ' + toTimeString(end_time_date) + '</td></tr>' 
+
+		return '<table><tr><td class="event-popover-content-left"><i class="icon-map-marker"></i><b>Location</b></td><td>'
+		+ event.location_names[0] + '</td></tr>'
+		+'<tr><td class="event-popover-content-left"><i class="icon-tag"></i><b>Event type</b></td><td>'
+		+ Model.EventTypes.getById(event.type_id).name + '</td></tr>'
+		+'<tr><td class="event-popover-content-left"><i class="icon-time"></i><b>Start time</b></td><td>'
+		+ toDateString(start_time_date) + ' ' + toTimeString(start_time_date) + '</td></tr>'
+		+'<tr><td class="event-popover-content-left"><i class="icon-time"></i><b>End time</b></td><td>' + toDateString(end_time_date) + ' ' + toTimeString(end_time_date) + '</td></tr>'
 		+'<tr><td>&nbsp;</td></tr><tr><td class="event-popover-content-left"><i class="icon-user"></i>Created by </td><td><i>' + event.creator_name + '</i></td></tr></table>';
 	}
 
@@ -341,7 +474,7 @@ View.Event = new function() {
 		Model.Event.bind(that.updateList);
 		Model.Event.bind(that.updateCalendar);
 		Model.Permission.bind(that.updateCalendarPermission);
-	
+
 		$('#editEvent-startDate').datepicker()
 		.on('changeDate',function(e) {
 			var endDateContainer = $('#editEvent-endDate');
@@ -373,7 +506,7 @@ View.Event = new function() {
 				View.Map.panToEventMarker(event.id);
 			},
 			eventDoubleClick : function(calEvent, $event) {
-				var event = calEvent.event;	
+				var event = calEvent.event;
 				View.Event.showUpdateEvent(event);
 			},
 			eventResize : function(newCalEvent, calEvent) {
@@ -393,7 +526,7 @@ View.Event = new function() {
      		}
 		});
 		//-----------------------------------------
-		// The sortable feature of events list	
+		// The sortable feature of events list
 		//-----------------------------------------
 		$( "#events-list" ).sortable({
 			update: function(event, ui) {
@@ -478,7 +611,7 @@ View.Event = new function() {
 					$('#events-list').sortable('enable');
 					showTravelTime();
 				// Nothing changed, just rerenderer the list based on Model data
-				} else {	
+				} else {
 					that.updateList(Model.Event.get(), Model.Map.get()['timelist']);
 				}
 			},
@@ -583,7 +716,7 @@ View.Event = new function() {
 		$('#optimize-cancel-btn').click(function() {
 			purposedEvents = [];
 		});
-		
+
 		$('.optimize-after').filter('button').click(function() {
 			$('.optimize-after').hide();
 			$('#optimize-optimize-btn').show();
@@ -591,7 +724,7 @@ View.Event = new function() {
 			$('#events-optimized').hide();
 			$(window).resize();
 			View.Map.untoggleOptimalPath();
-		});		
+		});
 	};
 };
 
@@ -647,7 +780,7 @@ Controller.Event = new function() {
 			});
 		}
 	};
-	
+
 	// Update the time of a list of events
 	this.updateEventTimes = function(events) {
 		var ids = [];
@@ -666,17 +799,17 @@ Controller.Event = new function() {
 			that.update(response);
 		});
 	}
-	
+
 	this.update = function(response) {
 		if (response) {
 			Model.Event.set(response.events);
 			Model.Permission.set(response.permission, true);
-			Model.Log.set(response.logs);
+//			Model.Log.set(response.logs);
 		} else {
 			$.get('events', that.update);
 		}
 	};
-	
+
 	this.removeEvent = function(eid) {
 		if (eid) {
 			$.post('events/delete', {'event_id': eid}, that.update);

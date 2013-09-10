@@ -1,6 +1,6 @@
-var superTripperApp = angular.module('superTripperApp', ['ui.bootstrap']);
+var superTripperApp = angular.module('superTripperApp', ['ui.bootstrap','ui.sortable']);
 
 superTripperApp.config(function($interpolateProvider) {
-    $interpolateProvider.startSymbol('[[');
-      $interpolateProvider.endSymbol(']]');
+  $interpolateProvider.startSymbol('[[');
+  $interpolateProvider.endSymbol(']]');
 });
