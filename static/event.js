@@ -3,115 +3,126 @@
 //
 
 superTripperApp.controller('EventCtrl', function($scope, $http, $timeout, Params) {
-  $scope.isTravelTimeShownFlag = true;
+  $scope.tempDataEvents;
   $scope.editEventData;
+  $scope.isTravelTimeShownFlag = true;
+  $scope.isUpdatableFlag = true;
 
   $scope.showUpdateEvent = function() {}
 
   $scope.removeEvent = function() {}
 
+  //TODO(bunkie): should call from trip.js instead of watch
+  $scope.$watch("dataEvents", function(value) {
+    if ($scope.isUpdatableFlag) {
+      $scope.tempDataEvents = angular.copy(value);
+    }
+  });
+
   $scope.sortableOptions = {
-			update: function(event, ui) {
-//				var indexArray = $(this).sortable('toArray').filter(function(e) {return !(e.match('time-'))});
-//				var index = ui.item.attr('id');
-//				var newIndex = jQuery.inArray(index + '', indexArray);
-//				var events = Model.Event.get();
-//				var updatesToMake = [];
-//				var data = Model.Event.copy(index);
-//				index = parseInt(index);
-//				if (index !== newIndex) {
-//					// Remove all travelTime
-//					$(this).children('.travelTime').remove();
-//
-//					var timeInterval =  events[index]['end_time'] - events[index]['start_time'];
-//
-//					// Determine the new start time
-//					switch(newIndex) {
-//						// It becomes the first event
-//						case 0:
-//							data['end_time'] = events[0]['start_time'];
-//							data['start_time'] = data['end_time'] - timeInterval;
-//							updatesToMake.push(data);
-//							break;
-//						// It becomes the last event
-//						case (indexArray.length - 1):
-//							data['start_time'] = events[events.length - 1]['end_time'];
-//							data['end_time'] = data['start_time'] + timeInterval;
-//							updatesToMake.push(data);
-//							break;
-//						// It becomes an event in the middle
-//						default:
-//							if (newIndex < index) {	// Moving up
-//								// Update the moved event itself
-//								data['start_time'] = events[newIndex - 1]['end_time'];
-//								data['end_time'] = data['start_time'] + timeInterval;
-//								updatesToMake.push(data);
-//								// Update all the events after if necessary
-//								for (var i = newIndex; i < events.length; i++) {
-//									if (i !== index) {
-//										if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
-//											var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
-//											var newData = Model.Event.copy(i);
-//											newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
-//											newData['end_time'] = newData['start_time'] + eventTimeInterval;
-//											updatesToMake.push(newData);
-//										} else {
-//											break;
-//										}
-//									}
-//								}
-//							} else if (newIndex > index) {	// Moving down
-//								// Move the events above up
-//								for (var i = index + 1; i <= newIndex; i++) {
-//									var newData = Model.Event.copy(i);
-//									newData['start_time'] -= timeInterval;
-//									newData['end_time'] -= timeInterval;
-//									updatesToMake.push(newData);
-//								}
-//								// Update the moved event itself
-//								data['start_time'] = updatesToMake[updatesToMake.length - 1]['end_time'];
-//								data['end_time'] = data['start_time'] + timeInterval;
-//								updatesToMake.push(data);
-//								// Update all events after
-//								for (var i = newIndex + 1; i < events.length; i++) {
-//									if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
-//										var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
-//										var newData = Model.Event.copy(i);
-//										newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
-//										newData['end_time'] = newData['start_time'] + eventTimeInterval;
-//										updatesToMake.push(newData);
-//									} else {
-//										break;
-//									}
-//								}
-//							}
-//							break;
-//					}
-//					// Disable the sortable before all requests are sended
-//					$('#events-list').sortable('disable');
-//					Controller.Event.updateEventTimes(updatesToMake);
-//					$('#events-list').sortable('enable');
-//					showTravelTime();
-//				// Nothing changed, just rerenderer the list based on Model data
-//				} else {
-//					that.updateList(Model.Event.get(), Model.Map.get()['timelist']);
-//				}
-			},
-			// Do not trigger sortable feature if dragging is done on a travel time
-			cancel: '.travelTime',
-			// Hide all travelTime when drag starts
-			start: function() {
-        $scope.isTravelTimeShownFlag = false;
-        //$scope.$apply();
-				// Preserve the spacing for travel time when drag starts
-				$('#events-list').find('li').css('margin-bottom', 17);
-			},
-			// Show all travelTime when drag ends
-			stop: function() {
-        $scope.isTravelTimeShownFlag = true;
-				$('#events-list').find('li').css('margin-bottom', 0);
-			}
-		};
+    update: function (event, ui) {
+      var index = ui.item.sortable.index;//ui.item.attr('id');
+      var newIndex = ui.item.index();//jQuery.inArray(index + '', indexArray);
+      var events = ui.item.sortable.resort.$modelValue;//Model.Event.get();
+      var updatesToMake = [];
+      var data = angular.copy(events[index]);//Model.Event.copy(index);
+      if (index !== newIndex) {
+        var timeInterval = events[index]['end_time'] - events[index]['start_time'];
+
+        // Determine the new start time
+        switch (newIndex) {
+          // It becomes the first event
+          case 0:
+            data['end_time'] = events[0]['start_time'];
+            data['start_time'] = data['end_time'] - timeInterval;
+            updatesToMake.push(data);
+            break;
+          // It becomes the last event
+          case (events.length - 1):
+            data['start_time'] = events[events.length - 1]['end_time'];
+            data['end_time'] = data['start_time'] + timeInterval;
+            updatesToMake.push(data);
+            break;
+          // It becomes an event in the middle
+          default:
+            if (newIndex < index) {	// Moving up
+              // Update the moved event itself
+              data['start_time'] = events[newIndex - 1]['end_time'];
+              data['end_time'] = data['start_time'] + timeInterval;
+              updatesToMake.push(data);
+              // Update all the events after if necessary
+              for (var i = newIndex; i < events.length; i++) {
+                if (i !== index) {
+                  if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
+                    var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
+                    var newData = angular.copy(events[i]);//Model.Event.copy(i);
+                    newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
+                    newData['end_time'] = newData['start_time'] + eventTimeInterval;
+                    updatesToMake.push(newData);
+                  } else {
+                    break;
+                  }
+                }
+              }
+            } else if (newIndex > index) {	// Moving down
+              // Move the events above up
+              for (var i = index + 1; i <= newIndex; i++) {
+                var newData = angular.copy(events[i]);//Model.Event.copy(i);
+                newData['start_time'] -= timeInterval;
+                newData['end_time'] -= timeInterval;
+                updatesToMake.push(newData);
+              }
+              // Update the moved event itself
+              data['start_time'] = updatesToMake[updatesToMake.length - 1]['end_time'];
+              data['end_time'] = data['start_time'] + timeInterval;
+              updatesToMake.push(data);
+              // Update all events after
+              for (var i = newIndex + 1; i < events.length; i++) {
+                if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
+                  var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
+                  var newData = Model.Event.copy(i);
+                  newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
+                  newData['end_time'] = newData['start_time'] + eventTimeInterval;
+                  updatesToMake.push(newData);
+                } else {
+                  break;
+                }
+              }
+            }
+            break;
+        }
+        // Disable the sortable before all requests are sended
+        //TODO(bunkie): use other way to disable sortable
+        $('#events-list').sortable('disable');
+        Controller.Event.updateEventTimes(updatesToMake);
+        $('#events-list').sortable('enable');
+//        showTravelTime();
+        // Nothing changed, just re-renderer the list based on Model data
+      } else {
+//        that.updateList(Model.Event.get(), Model.Map.get()['timelist']);
+      }
+    },
+    // Do not trigger sortable feature if dragging is done on a travel time
+    cancel: '.travelTime',
+    // Hide all travelTime when drag starts
+    start: function () {
+      $scope.isTravelTimeShownFlag = false;
+      $scope.isUpdatableFlag = false;
+      $scope.$apply();
+      // Preserve the spacing for travel time when drag starts
+      $('#events-list').find('li').css('margin-bottom', 17);
+    },
+    // Show all travelTime when drag ends
+    stop: function () {
+      $scope.isTravelTimeShownFlag = true;
+      $scope.isUpdatableFlag = true;
+      $scope.$apply();
+      $('#events-list').find('li').css('margin-bottom', 0);
+    },
+    axis: "y",
+    containment: "parent"
+  };
+  $( "#events-list" ).disableSelection(); //TODO(bunkie): more legit way to disable selection
 
 //
 //  var DEFAULT_EVENT_LENGTH = 60 * 60000;
@@ -135,10 +146,10 @@ superTripperApp.controller('EventCtrl', function($scope, $http, $timeout, Params
 
 });
 
-//View.Event: Renders the list view and the calendar view of schedule
-//Controller.Event: handles AJAX calls about event updating
+// View.Event: Renders the list view and the calendar view of schedule
+// Controller.Event: handles AJAX calls about event updating
 
-
+//
 View.Event = new function() {
 	var that = this;
 	var DEFAULT_EVENT_LENGTH = 60 * 60000;	// default length of a new event in milliseconds
@@ -525,111 +536,111 @@ View.Event = new function() {
      			$event.remove();
      		}
 		});
-		//-----------------------------------------
-		// The sortable feature of events list
-		//-----------------------------------------
-		$( "#events-list" ).sortable({
-			update: function(event, ui) {
-				var indexArray = $(this).sortable('toArray').filter(function(e) {return !(e.match('time-'))});
-				var index = ui.item.attr('id');
-				var newIndex = jQuery.inArray(index + '', indexArray);
-				var events = Model.Event.get();
-				var updatesToMake = [];
-				var data = Model.Event.copy(index);
-				index = parseInt(index);
-				if (index !== newIndex) {
-					// Remove all travelTime
-					$(this).children('.travelTime').remove();
-
-					var timeInterval =  events[index]['end_time'] - events[index]['start_time'];
-
-					// Determine the new start time
-					switch(newIndex) {
-						// It becomes the first event
-						case 0:
-							data['end_time'] = events[0]['start_time'];
-							data['start_time'] = data['end_time'] - timeInterval;
-							updatesToMake.push(data);
-							break;
-						// It becomes the last event
-						case (indexArray.length - 1):
-							data['start_time'] = events[events.length - 1]['end_time'];
-							data['end_time'] = data['start_time'] + timeInterval;
-							updatesToMake.push(data);
-							break;
-						// It becomes an event in the middle
-						default:
-							if (newIndex < index) {	// Moving up
-								// Update the moved event itself
-								data['start_time'] = events[newIndex - 1]['end_time'];
-								data['end_time'] = data['start_time'] + timeInterval;
-								updatesToMake.push(data);
-								// Update all the events after if necessary
-								for (var i = newIndex; i < events.length; i++) {
-									if (i !== index) {
-										if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
-											var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
-											var newData = Model.Event.copy(i);
-											newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
-											newData['end_time'] = newData['start_time'] + eventTimeInterval;
-											updatesToMake.push(newData);
-										} else {
-											break;
-										}
-									}
-								}
-							} else if (newIndex > index) {	// Moving down
-								// Move the events above up
-								for (var i = index + 1; i <= newIndex; i++) {
-									var newData = Model.Event.copy(i);
-									newData['start_time'] -= timeInterval;
-									newData['end_time'] -= timeInterval;
-									updatesToMake.push(newData);
-								}
-								// Update the moved event itself
-								data['start_time'] = updatesToMake[updatesToMake.length - 1]['end_time'];
-								data['end_time'] = data['start_time'] + timeInterval;
-								updatesToMake.push(data);
-								// Update all events after
-								for (var i = newIndex + 1; i < events.length; i++) {
-									if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
-										var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
-										var newData = Model.Event.copy(i);
-										newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
-										newData['end_time'] = newData['start_time'] + eventTimeInterval;
-										updatesToMake.push(newData);
-									} else {
-										break;
-									}
-								}
-							}
-							break;
-					}
-					// Disable the sortable before all requests are sended
-					$('#events-list').sortable('disable');
-					Controller.Event.updateEventTimes(updatesToMake);
-					$('#events-list').sortable('enable');
-					showTravelTime();
-				// Nothing changed, just rerenderer the list based on Model data
-				} else {
-					that.updateList(Model.Event.get(), Model.Map.get()['timelist']);
-				}
-			},
-			// Do not trigger sortable feature if dragging is done on a travel time
-			cancel: '.travelTime',
-			// Hide all travelTime when drag starts
-			start: function() {
-				$('.travelTime').hide();
-				// Preserve the spacing for travel time when drag starts
-				$('#events-list').find('li').css('margin-bottom', 17);
-			},
-			// Show all travelTime when drag ends
-			stop: function() {
-				$('.travelTime').show();
-				$('#events-list').find('li').css('margin-bottom', 0);
-			}
-		});
-		$( "#events-list" ).disableSelection();
+//		//-----------------------------------------
+//		// The sortable feature of events list
+//		//-----------------------------------------
+//		$( "#events-list" ).sortable({
+//			update: function(event, ui) {
+//				var indexArray = $(this).sortable('toArray').filter(function(e) {return !(e.match('time-'))});
+//				var index = ui.item.attr('id');
+//				var newIndex = jQuery.inArray(index + '', indexArray);
+//				var events = Model.Event.get();
+//				var updatesToMake = [];
+//				var data = Model.Event.copy(index);
+//				index = parseInt(index);
+//				if (index !== newIndex) {
+//					// Remove all travelTime
+//					$(this).children('.travelTime').remove();
+//
+//					var timeInterval =  events[index]['end_time'] - events[index]['start_time'];
+//
+//					// Determine the new start time
+//					switch(newIndex) {
+//						// It becomes the first event
+//						case 0:
+//							data['end_time'] = events[0]['start_time'];
+//							data['start_time'] = data['end_time'] - timeInterval;
+//							updatesToMake.push(data);
+//							break;
+//						// It becomes the last event
+//						case (indexArray.length - 1):
+//							data['start_time'] = events[events.length - 1]['end_time'];
+//							data['end_time'] = data['start_time'] + timeInterval;
+//							updatesToMake.push(data);
+//							break;
+//						// It becomes an event in the middle
+//						default:
+//							if (newIndex < index) {	// Moving up
+//								// Update the moved event itself
+//								data['start_time'] = events[newIndex - 1]['end_time'];
+//								data['end_time'] = data['start_time'] + timeInterval;
+//								updatesToMake.push(data);
+//								// Update all the events after if necessary
+//								for (var i = newIndex; i < events.length; i++) {
+//									if (i !== index) {
+//										if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
+//											var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
+//											var newData = Model.Event.copy(i);
+//											newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
+//											newData['end_time'] = newData['start_time'] + eventTimeInterval;
+//											updatesToMake.push(newData);
+//										} else {
+//											break;
+//										}
+//									}
+//								}
+//							} else if (newIndex > index) {	// Moving down
+//								// Move the events above up
+//								for (var i = index + 1; i <= newIndex; i++) {
+//									var newData = Model.Event.copy(i);
+//									newData['start_time'] -= timeInterval;
+//									newData['end_time'] -= timeInterval;
+//									updatesToMake.push(newData);
+//								}
+//								// Update the moved event itself
+//								data['start_time'] = updatesToMake[updatesToMake.length - 1]['end_time'];
+//								data['end_time'] = data['start_time'] + timeInterval;
+//								updatesToMake.push(data);
+//								// Update all events after
+//								for (var i = newIndex + 1; i < events.length; i++) {
+//									if (events[i]['start_time'] < updatesToMake[updatesToMake.length - 1]['end_time']) {
+//										var eventTimeInterval = events[i]['end_time'] - events[i]['start_time'];
+//										var newData = Model.Event.copy(i);
+//										newData['start_time'] = updatesToMake[i - newIndex]['end_time'];
+//										newData['end_time'] = newData['start_time'] + eventTimeInterval;
+//										updatesToMake.push(newData);
+//									} else {
+//										break;
+//									}
+//								}
+//							}
+//							break;
+//					}
+//					// Disable the sortable before all requests are sended
+//					$('#events-list').sortable('disable');
+//					Controller.Event.updateEventTimes(updatesToMake);
+//					$('#events-list').sortable('enable');
+//					showTravelTime();
+//				// Nothing changed, just rerenderer the list based on Model data
+//				} else {
+//					that.updateList(Model.Event.get(), Model.Map.get()['timelist']);
+//				}
+//			},
+//			// Do not trigger sortable feature if dragging is done on a travel time
+//			cancel: '.travelTime',
+//			// Hide all travelTime when drag starts
+//			start: function() {
+//				$('.travelTime').hide();
+//				// Preserve the spacing for travel time when drag starts
+//				$('#events-list').find('li').css('margin-bottom', 17);
+//			},
+//			// Show all travelTime when drag ends
+//			stop: function() {
+//				$('.travelTime').show();
+//				$('#events-list').find('li').css('margin-bottom', 0);
+//			}
+//		});
+//		$( "#events-list" ).disableSelection();
 
 		//---------------------------
 		// The optimizing feature

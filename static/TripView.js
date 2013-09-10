@@ -4,7 +4,7 @@ View.initialize = function() {
 //	this.Collaborators.initialize();
 	this.EventTypes.initialize();
 //	this.Invite.initialize();
-	this.Event.initialize();
+//	this.Event.initialize();
 //	this.MyTrips.initialize();
 //	this.Log.initialize();
 	

@@ -9,7 +9,7 @@ Controller.Update = new function() {
   this.update = function() {
 //    Controller.Collaborators.update();
     Controller.EventTypes.update();
-    Controller.Event.update();
+//    Controller.Event.update();
 //    Controller.MyTrips.update();
     $.get('permission', function(response) {
       // Logout to triplist page if the user does not have permission to view this page
