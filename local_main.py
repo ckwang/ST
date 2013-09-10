@@ -402,11 +402,23 @@ def updateEventWithType(trip_id):
   else:
     return jsonify({"permission": permission})
 
+@app.route("/locations", methods=["GET"])
+def get_locations_in_range():
+  try:
+    lat = float(request.args['lat'])
+    lng = float(request.args['lng'])
+    lat_delta = float(request.args.get('lat_delta', 0.05))
+    lng_delta = float(request.args.get('lng_delta', 0.05))
+    result = [l.to_dict(fields=['name', 'lat', 'lng']) for l in Location.get_locations_around(lat, lng, lat_delta, lng_delta)]
+    return jsonify({'locations': result})
+  except KeyError:
+    return jsonify({})
+
 @app.route("/")
 def mainPage():
   return redirect(url_for("showTrip"))
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
-    #app.run()
+    #app.run(host='0.0.0.0')
+    app.run(debug=True)
 
