@@ -17,6 +17,7 @@ superTripperApp.controller('TripCtrl', function($scope, $timeout, Params) {
   $scope.dataTrips = {};
   $scope.dataCollaborators = {};
   $scope.dataEvents = {};
+  $scope.dataEventTypes = {};
   $scope.dataPermission = 0;
 
   $scope.Update = function() {
@@ -44,6 +45,11 @@ superTripperApp.controller('TripCtrl', function($scope, $timeout, Params) {
       $scope.dataEvents = response.events;
       $scope.dataPermission = response.permission;
       $scope.dataLogs = response.logs;
+      $scope.$apply();
+    });
+
+    $.get('eventTypes', function(response) {
+      $scope.dataEventTypes = response.event_types;
       $scope.$apply();
     });
 

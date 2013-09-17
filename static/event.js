@@ -2,13 +2,12 @@
 //	Handles event
 //
 
-superTripperApp.controller('EventCtrl', function($scope, $http, $timeout, Params) {
+superTripperApp.controller('EventCtrl', function($scope, $modal, $http, $timeout, Params) {
   $scope.tempDataEvents;
-  $scope.editEventData;
   $scope.isTravelTimeShownFlag = true;
   $scope.isUpdatableFlag = true;
-
-  $scope.showUpdateEvent = function() {}
+  $scope.isEditEventOpenFlag = false;
+  var DEFAULT_EVENT_LENGTH = 60 * 60000;
 
   $scope.removeEvent = function() {}
 
@@ -124,27 +123,113 @@ superTripperApp.controller('EventCtrl', function($scope, $http, $timeout, Params
   };
   $( "#events-list" ).disableSelection(); //TODO(bunkie): more legit way to disable selection
 
-//
-//  var DEFAULT_EVENT_LENGTH = 60 * 60000;
-//
-//  // set data for the edit event
-//  $scope.setEditEventData = function(data) {
-//    $scope.editEventData = angular.copy(data);
-//    if (!$scope.editEventData.name) {
-//      $scope.editEventData.name = $scope.editEventData.location_names[0];
-//    }
-//    var latestEndTime = $scope.dataEvents.length > 0?
-//      $scope.dataEvents[$scope.dataEvents.length - 1].end_time:
-//      (Math.ceil((new Date()).getTime() / 30 / 60000) * 30 * 60000);
-//    if (!$scope.editEventData.start_time) {
-//      $scope.editEventData.start_time = latestEndTime;
-//    }
-//    if (!scope.editEventData.end_time) {
-//      $scope.editEventData.end_time = latestEndTime + DEFAULT_EVENT_LENGTH;
-//    }
-//  };
+  var showEditEvent = function(title, btnText, clickHandler) {
+    return function(data) {
+
+//      var confirmFunction = function() {
+////        var data = that.getEditEventData();
+////        if (data.start_time > data.end_time) {
+////          $('#editEvent-endTimeGroup').addClass('error');
+////          return;
+////        }
+//        $scope.hideEditEvent();
+//        clickHandler();
+//      };
+
+      // set data for the edit event
+      var editEventData = angular.copy(data);
+      if (!editEventData.name) {
+        editEventData.name = editEventData.location_names[0];
+      }
+      var latestEndTime = $scope.dataEvents.length > 0?
+        $scope.dataEvents[$scope.dataEvents.length - 1].end_time:
+        (Math.ceil((new Date()).getTime() / 30 / 60000) * 30 * 60000);
+      if (!editEventData.start_time) {
+        editEventData.start_time = latestEndTime;
+      }
+      if (!editEventData.end_time) {
+        editEventData.end_time = latestEndTime + DEFAULT_EVENT_LENGTH;
+      }
+
+
+      var modalInstance = $modal.open({
+        templateUrl: 'editEventModal.html',
+        scope: $scope,
+        controller: EditEventModalCtrl,
+        resolve: {
+          title: function() {return title;},
+          buttonText: function() {return btnText;},
+          editEventData: function() {return editEventData;}
+        }
+      });
+
+      modalInstance.result.then(clickHandler);
+    };
+  };
+
+  $scope.showAddEvent = function(data) {
+    showEditEvent('Add an event', 'Add', addEvent)(data);
+  };
+
+  $scope.showUpdateEvent = function(data) {
+    showEditEvent('Update the event', 'Update', updateEvent)(data);
+  };
+
+  var addEvent = function(data) {
+    if (!data)  return;
+    if (data.type_id) {
+      $.post("events/add", data, update);
+    } else {
+      $.post('events/addWithType', data, update);
+    }
+  };
+
+  // Update a single event
+  var updateEvent = function(data) {
+    if (!data)	return;
+    if (data.type_id) {
+      console.log(data);
+      $.post("events/update", data, update);
+    } else {
+      $.post('events/updateWithType', data, update);
+    }
+  };
+
+  $scope.removeEvent = function(eid) {
+    if (eid) {
+      $.post('events/delete', {'event_id': eid}, update);
+    }
+  }
+
+  var update = function(response) {
+    if (response) {
+      if (response.event_types) {
+        $scope.dataEventTypes = response.event_types;
+      }
+      $scope.dataEvents = response.events;
+      $scope.dataPermission = response.permission;
+      $scope.dataLogs = response.logs;
+      $scope.$apply();
+    }
+  };
 
 });
+
+var EditEventModalCtrl = function ($scope, $modalInstance, title, buttonText, editEventData) {
+  $scope.title = title;
+  $scope.buttonText = buttonText;
+  $scope.editEventData = editEventData;
+
+  $scope.hideEditEvent = function() {
+    $modalInstance.dismiss('cancel');
+  };
+
+  $scope.confirm = function () {
+    $scope.editEventData.start_time = new Date($scope.editEventData.start_time).getTime();
+    $scope.editEventData.end_time = new Date($scope.editEventData.end_time).getTime();
+    $modalInstance.close($scope.editEventData);
+  };
+}
 
 // View.Event: Renders the list view and the calendar view of schedule
 // Controller.Event: handles AJAX calls about event updating
