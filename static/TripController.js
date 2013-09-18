@@ -35,6 +35,6 @@ Controller.initialize = function() {
 //  this.Collaborators.initialize();
   this.Update.initialize();
   this.Event.initialize();
-  this.Map.initialize();
+//  this.Map.initialize();
 //  this.MyTrips.initialize();
 }

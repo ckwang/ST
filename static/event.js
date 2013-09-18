@@ -2,14 +2,16 @@
 //	Handles event
 //
 
+// show edit event modal
+// show event popup
+// travel time
+
 superTripperApp.controller('EventCtrl', function($scope, $modal, $http, $timeout, Params) {
   $scope.tempDataEvents;
   $scope.isTravelTimeShownFlag = true;
   $scope.isUpdatableFlag = true;
   $scope.isEditEventOpenFlag = false;
   var DEFAULT_EVENT_LENGTH = 60 * 60000;
-
-  $scope.removeEvent = function() {}
 
   //TODO(bunkie): should call from trip.js instead of watch
   $scope.$watch("dataEvents", function(value) {
@@ -93,7 +95,7 @@ superTripperApp.controller('EventCtrl', function($scope, $modal, $http, $timeout
         // Disable the sortable before all requests are sended
         //TODO(bunkie): use other way to disable sortable
         $('#events-list').sortable('disable');
-        Controller.Event.updateEventTimes(updatesToMake);
+        updateEventTimes(updatesToMake);
         $('#events-list').sortable('enable');
 //        showTravelTime();
         // Nothing changed, just re-renderer the list based on Model data
@@ -122,6 +124,16 @@ superTripperApp.controller('EventCtrl', function($scope, $modal, $http, $timeout
     containment: "parent"
   };
   $( "#events-list" ).disableSelection(); //TODO(bunkie): more legit way to disable selection
+
+  $scope.hasConflict = function(index) {
+    if (index > 0 && $scope.tempDataEvents[index].start_time < $scope.tempDataEvents[index-1].end_time) {
+      return true;
+    }
+    if (index+1 < $scope.tempDataEvents.length && $scope.tempDataEvents[index+1].start_time < $scope.tempDataEvents[index].end_time) {
+      return true;
+    }
+    return false;
+  };
 
   var showEditEvent = function(title, btnText, clickHandler) {
     return function(data) {
@@ -194,6 +206,23 @@ superTripperApp.controller('EventCtrl', function($scope, $modal, $http, $timeout
       $.post('events/updateWithType', data, update);
     }
   };
+
+  // Update the time of a list of events
+  var updateEventTimes = function(events) {
+    var ids = [];
+    var startTimes = [];
+    var endTimes = [];
+    events.forEach(function(event) {
+      ids.push(event.id);
+      startTimes.push(event.start_time);
+      endTimes.push(event.end_time);
+    });
+    var data = {};
+    data['id[]'] = ids;
+    data['start_time[]'] = startTimes;
+    data['end_time[]'] = endTimes;
+    $.post('events/updateTimes', data, update);
+  }
 
   $scope.removeEvent = function(eid) {
     if (eid) {

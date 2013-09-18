@@ -3,16 +3,25 @@
 //  Updates the dropdown when there's new data
 //
 
-superTripperApp.controller("MyTripsCtrl", function($scope, Params) {
+superTripperApp.controller("MyTripsCtrl", function($scope, $modal, Params) {
   $scope.TripsURL = Params.TRIPS_URL;
 
-  $scope.isCreateTripModalOpenFlag = false;
-
   $scope.openCreateTripModal = function() {
-    $scope.isCreateTripModalOpenFlag = true;
+    $modal.open({
+      templateUrl: 'createTripModal.html',
+      scope: $scope,
+      controller: CreateTripModalCtrl
+    });
+  };
+});
+
+var CreateTripModalCtrl = function ($scope, $modalInstance) {
+
+  $scope.commitChanges = function () {
+    $modalInstance.close($scope.tempDataCollaborators);
   };
 
-  $scope.closeCreateTripModal = function() {
-    $scope.isCreateTripModalOpenFlag = false;
-  }
-});
+  $scope.closeCreateTripModal = function () {
+    $modalInstance.dismiss('cancel');
+  };
+};
